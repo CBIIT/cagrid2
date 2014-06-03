@@ -47,7 +47,7 @@
 
     <!-- Index Entry Service -->
     <bean id="indexEntryWSRF" class="org.cagrid.index.service.wsrf.IndexEntryWSRFImpl">
-        <constructor-arg index="0" ref="indexEntry" />
+        <constructor-arg index="0" ref="index" />
     </bean>
     <jaxws:endpoint xmlns:e="http://mds.globus.org/bigindex/2008/11/24/service"
                     xmlns:s="http://mds.globus.org/bigindex/2008/11/24/service" id="indexEntryWSRFEP"

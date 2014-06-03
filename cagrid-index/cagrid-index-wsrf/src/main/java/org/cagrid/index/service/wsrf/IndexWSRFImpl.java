@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
+import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
@@ -21,6 +22,9 @@ import org.cagrid.index.types.BigIndexContentIDList;
 import org.cagrid.index.wsrf.stubs.BigIndexPortTypeImpl;
 import org.cagrid.index.wsrf.stubs.GetContentResponse;
 import org.cagrid.wsrf.properties.ResourceKey;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceNotDestroyedFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.TerminationTimeChangeRejectedFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.UnableToSetTerminationTimeFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetResourcePropertyResponse;
@@ -65,6 +69,7 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
 
     @Override
     public GetContentResponse getContent(BigIndexContentIDList getContentRequest) {
+        //TODO: pull the content from the service
         // TODO Auto-generated method stub
         return super.getContent(getContentRequest);
     }
@@ -107,20 +112,34 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
         entry.setMemberServiceEPR(memberEPR);
         entry.setServiceGroupEntryEPR(serviceGroupEPR);
 
-        // TODO: change what we pass into the service?
-        String entryId = this.indexService.add(entry);
+        String entryId = this.indexService.add(entry, termTime);
         ResourceKey entryKey = getResourceKey(entryId);
 
         // construct an EPR to entry through the entry service.
         // TODO: is there a better way to get the URL to use?
         transportURL = transportURL + "Entry";
         EndpointReferenceType entryEPR = createEndpointReference(transportURL, entryKey);
-        // TODO: need an "entry" resource to set this stuff on
+        // TODO: do we need to actually save this EPR on the "entry" resource?
         // entry.setEntryEPR(entryEPR);
-        // // set initial termination time
-        // entry.setTerminationTime(termTime);
 
         return entryEPR;
+    }
+
+    @Override
+    public void setTerminationTime(Calendar requestedTerminationTime, Holder<Calendar> newTerminationTime,
+            Holder<Calendar> currentTime) throws TerminationTimeChangeRejectedFault,
+            org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault,
+            UnableToSetTerminationTimeFault {
+        TerminationTimeChangeRejectedFault fault = new TerminationTimeChangeRejectedFault(
+                "Terminating this resource is not supported.");
+        throw fault;
+    }
+
+    @Override
+    public void destroy() throws ResourceNotDestroyedFault,
+            org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault {
+        ResourceNotDestroyedFault fault = new ResourceNotDestroyedFault("Terminating this resource is not supported.");
+        throw fault;
     }
 
     @Override
@@ -138,28 +157,6 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
         // TODO Auto-generated method stub
         return super.queryResourceProperties(queryResourcePropertiesRequest);
     }
-
-    // private DelegatedCredentialReference getDelegatedCredentialRefernce(DelegationIdentifier id) throws
-    // CDSInternalFaultFaultMessage {
-    //
-    // try {
-    // MessageContext msgContext = wsContext.getMessageContext();
-    // HttpServletRequest request = (HttpServletRequest) msgContext.get("HTTP.REQUEST");
-    // String transportURL = request.getRequestURL().toString();
-    // // TODO: fix this to use the property... but deal with handling which endpoint they came in on
-    // // this currently assumes the cds and dcs URLs are the same up to the last / (the old code did too)
-    // transportURL = transportURL.substring(0, transportURL.lastIndexOf('/') + 1);
-    // transportURL += "DelegatedCredential";
-    //
-    // EndpointReferenceType epr = createEndpointReference(transportURL, getResourceKey(id));
-    // DelegatedCredentialReference response = new DelegatedCredentialReference();
-    // response.setEndpointReference(epr);
-    // return response;
-    // } catch (Exception e) {
-    // logger.error(e.getMessage(), e);
-    // throw new CDSInternalFaultFaultMessage("Unexpected error creating EPR.", e);
-    // }
-    // }
 
     private EndpointReferenceType createEndpointReference(String address, ResourceKey key) {
         EndpointReferenceType reference = new EndpointReferenceType();
@@ -191,7 +188,6 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
     public ResourceKey getKey() {
         return key;
     }
-
 
     private void setAny(ReferencePropertiesType object, SOAPElement value) {
         if (value == null || object == null) {

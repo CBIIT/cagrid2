@@ -21,7 +21,6 @@
     <ctx:property-placeholder properties-ref="preProps"/>
 
     <osgi:service ref="index" interface="org.cagrid.index.service.IndexService"/>
-    <osgi:service ref="indexEntry" interface="org.cagrid.index.service.IndexEntryService"/>
     
     <osgi:reference id="trustService" cardinality="0..1" interface="org.cagrid.trust.service.TrustService"/>
 

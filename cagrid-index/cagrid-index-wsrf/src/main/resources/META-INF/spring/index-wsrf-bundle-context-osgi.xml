@@ -20,6 +20,5 @@
     <ctx:property-placeholder properties-ref="preProps"/>
 
     <osgi:reference id="index" interface="org.cagrid.index.service.IndexService"/>
-    <osgi:reference id="indexEntry" interface="org.cagrid.index.service.IndexEntryService"/>
 
 </beans>

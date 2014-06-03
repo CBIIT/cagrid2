@@ -9,8 +9,4 @@
 
     <bean id="index" class="org.cagrid.index.service.impl.IndexServiceImpl">
     </bean>
-
-    <bean id="indexEntry" class="org.cagrid.index.service.impl.IndexEntryServiceImpl">
-        <!-- TODO: pass wsrf-rp client -->
-    </bean>
 </beans>
