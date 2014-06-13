@@ -1,10 +1,15 @@
 package org.cagrid.index.service.wsrf;
 
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPBodyElement;
 import javax.xml.soap.SOAPElement;
@@ -12,7 +17,13 @@ import javax.xml.ws.Holder;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
+import org.cagrid.core.common.JAXBUtils;
+import org.cagrid.core.resource.ExternalSingletonResourceProperty;
+import org.cagrid.core.resource.ExternalSingletonResourcePropertyValue;
+import org.cagrid.core.resource.ResourceImpl;
+import org.cagrid.core.resource.ResourcePropertyDescriptor;
 import org.cagrid.core.resource.SimpleResourceKey;
+import org.cagrid.core.resource.SingletonResourceHomeImpl;
 import org.cagrid.index.aggregator.types.AggregatorConfig;
 import org.cagrid.index.aggregator.types.AggregatorContent;
 import org.cagrid.index.aggregator.types.PairedKeyType;
@@ -20,8 +31,16 @@ import org.cagrid.index.aggregator.utils.AggregatorUtils;
 import org.cagrid.index.service.IndexService;
 import org.cagrid.index.types.BigIndexContentIDList;
 import org.cagrid.index.wsrf.stubs.BigIndexPortTypeImpl;
+import org.cagrid.index.wsrf.stubs.BigIndexResourceProperties;
 import org.cagrid.index.wsrf.stubs.GetContentResponse;
+import org.cagrid.wsrf.properties.InvalidResourceKeyException;
+import org.cagrid.wsrf.properties.NoSuchResourceException;
+import org.cagrid.wsrf.properties.Resource;
+import org.cagrid.wsrf.properties.ResourceException;
+import org.cagrid.wsrf.properties.ResourceHome;
 import org.cagrid.wsrf.properties.ResourceKey;
+import org.cagrid.wsrf.properties.ResourceProperty;
+import org.cagrid.wsrf.properties.ResourcePropertySet;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceNotDestroyedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.TerminationTimeChangeRejectedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.UnableToSetTerminationTimeFault;
@@ -40,6 +59,7 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.Entr
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.AddRefusedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.ContentCreationFailedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.UnsupportedMemberInterfaceFault;
+import org.w3c.dom.Node;
 import org.xmlsoap.schemas.ws._2004._03.addressing.AttributedURI;
 import org.xmlsoap.schemas.ws._2004._03.addressing.EndpointReferenceType;
 import org.xmlsoap.schemas.ws._2004._03.addressing.ReferencePropertiesType;
@@ -51,27 +71,159 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
     private static final Logger LOG = Logger.getLogger(IndexWSRFImpl.class.getName());
 
     private IndexService indexService;
+    private ResourceHome resourceHome;
+    private DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.FULL);
 
     @javax.annotation.Resource
     private WebServiceContext wsContext;
 
     public IndexWSRFImpl(IndexService indexService) {
         this.indexService = indexService;
+        this.resourceHome = getResourceHome();
+    }
+
+    private ResourceHome getResourceHome() {
+        ResourceImpl resource = new ResourceImpl(null);
+        ResourceHome resourceHome = new SingletonResourceHomeImpl(resource);
+        try {
+            // What resource properties should we know about?
+            Collection<ResourcePropertyDescriptor<?>> resourcePropertyDescriptors = ResourcePropertyDescriptor
+                    .analyzeResourcePropertiesHolder(BigIndexResourceProperties.class);
+
+            // Map them by field.
+            Map<String, ResourcePropertyDescriptor<?>> descriptorsByField = ResourcePropertyDescriptor
+                    .mapByField(resourcePropertyDescriptors);
+
+            // // The rest of the properties are callbacks.
+            // @SuppressWarnings("unchecked")
+            // ResourcePropertyDescriptor<Calendar> authenticationProfilesDescriptor =
+            // (ResourcePropertyDescriptor<Calendar>) descriptorsByField
+            // .get("currentTime");
+            // // Must treat auth profiles as Element!
+            // ResourcePropertyDescriptor<Element> authenticationProfilesElementDescriptor = new
+            // ResourcePropertyDescriptor<Element>(
+            // authenticationProfilesDescriptor.getResourcePropertyQName(), Element.class,
+            // authenticationProfilesDescriptor.getFieldName());
+            //
+            // ExternalSingletonResourcePropertyValue<Element> propertyValue = new
+            // ExternalSingletonResourcePropertyValue<Element>() {
+            // @Override
+            // public Element getPropertyValue() {
+            // return getAuthenticationProfilesElement();
+            // }
+            // };
+            // ResourceProperty<Element> resourceProperty = new ExternalSingletonResourceProperty<Element>(
+            // authenticationProfilesElementDescriptor, propertyValue);
+            // resource.add(resourceProperty);
+            // }
+
+            @SuppressWarnings("unchecked")
+            ResourcePropertyDescriptor<Calendar> timeDescriptor = (ResourcePropertyDescriptor<Calendar>) descriptorsByField
+                    .get("currentTime");
+            if (timeDescriptor != null) {
+                ExternalSingletonResourcePropertyValue<Calendar> propertyValue = new ExternalSingletonResourcePropertyValue<Calendar>() {
+                    @Override
+                    public Calendar getPropertyValue() {
+                        return getCurrentTime();
+                    }
+                };
+                ResourceProperty<Calendar> resourceProperty = new ExternalSingletonResourceProperty<Calendar>(
+                        timeDescriptor, propertyValue);
+                resource.add(resourceProperty);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return resourceHome;
     }
 
     @Override
     public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(
             GetMultipleResourceProperties getMultipleResourcePropertiesRequest) throws ResourceUnknownFault,
             InvalidResourcePropertyQNameFault {
-        // TODO Auto-generated method stub
-        return super.getMultipleResourceProperties(getMultipleResourcePropertiesRequest);
+        LOG.info("getMultipleResourceProperty " + getMultipleResourcePropertiesRequest.getResourceProperty());
+        GetMultipleResourcePropertiesResponse response = new GetMultipleResourcePropertiesResponse();
+        for (Iterator<QName> iterator = getMultipleResourcePropertiesRequest.getResourceProperty().iterator(); iterator
+                .hasNext();) {
+            QName qname = iterator.next();
+            Exception e;
+            try {
+                Resource resource = resourceHome.find(null);
+                if (resource instanceof ResourcePropertySet) {
+                    ResourcePropertySet resourcePropertySet = (ResourcePropertySet) resource;
+                    ResourceProperty<?> resourceProperty = resourcePropertySet.get(qname);
+                    if (resourceProperty != null) {
+                        Object resourcePropertyValue = resourceProperty.get(0);
+                        LOG.info("getResourceProperty " + qname + " returning " + resourcePropertyValue);
+                        if (!(resourcePropertyValue instanceof Node)
+                                && !(resourcePropertyValue instanceof JAXBElement<?>)) {
+                            // TODO: what to do for other types
+                            resourcePropertyValue = JAXBUtils.wrap(resourcePropertyValue, resourceProperty
+                                    .getMetaData().getName());
+                        }
+                        response.getAny().add(resourcePropertyValue);
+                    }
+                }
+            } catch (NoSuchResourceException nsre) {
+                e = nsre;
+            } catch (InvalidResourceKeyException irke) {
+                e = irke;
+            } catch (ResourceException re) {
+                e = re;
+            }
+        }
+
+        return response;
+    }
+
+    @Override
+    public GetResourcePropertyResponse getResourceProperty(QName resourcePropertyQName) throws ResourceUnknownFault,
+            InvalidResourcePropertyQNameFault {
+        LOG.info("getResourceProperty " + resourcePropertyQName);
+        Exception e = null;
+        GetResourcePropertyResponse response = null;
+        try {
+            Resource resource = resourceHome.find(null);
+            if (resource instanceof ResourcePropertySet) {
+                ResourcePropertySet resourcePropertySet = (ResourcePropertySet) resource;
+                ResourceProperty<?> resourceProperty = resourcePropertySet.get(resourcePropertyQName);
+                if (resourceProperty != null) {
+                    Object resourcePropertyValue = resourceProperty.get(0);
+                    LOG.info("getResourceProperty " + resourcePropertyQName + " returning " + resourcePropertyValue);
+                    if (!(resourcePropertyValue instanceof Node) && !(resourcePropertyValue instanceof JAXBElement<?>)) {
+                        // TODO: what to do for other types
+                        resourcePropertyValue = JAXBUtils.wrap(resourcePropertyValue, resourceProperty.getMetaData()
+                                .getName());
+                    }
+                    response = new GetResourcePropertyResponse();
+                    response.getAny().add(resourcePropertyValue);
+                }
+            }
+        } catch (NoSuchResourceException nsre) {
+            e = nsre;
+        } catch (InvalidResourceKeyException irke) {
+            e = irke;
+        } catch (ResourceException re) {
+            e = re;
+        }
+        if ((response == null) || (e != null)) {
+            throw new ResourceUnknownFault("No resource for '" + resourcePropertyQName + "'", e);
+        }
+        return response;
     }
 
     @Override
     public GetContentResponse getContent(BigIndexContentIDList getContentRequest) {
-        //TODO: pull the content from the service
+        // TODO: pull the content from the service
         // TODO Auto-generated method stub
         return super.getContent(getContentRequest);
+    }
+
+    public Calendar getCurrentTime() {
+        Calendar now = Calendar.getInstance();
+        LOG.finest("getCurrentTime()=" + dateFormat.format(now.getTime()));
+        return now;
     }
 
     @Override
@@ -140,13 +292,6 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
             org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault {
         ResourceNotDestroyedFault fault = new ResourceNotDestroyedFault("Terminating this resource is not supported.");
         throw fault;
-    }
-
-    @Override
-    public GetResourcePropertyResponse getResourceProperty(QName getResourcePropertyRequest)
-            throws ResourceUnknownFault, InvalidResourcePropertyQNameFault {
-        // TODO Auto-generated method stub
-        return super.getResourceProperty(getResourcePropertyRequest);
     }
 
     @Override
