@@ -12,10 +12,10 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 
 public class IndexServiceImpl implements IndexService {
-    
-    //TODO: sweeperthread to look for "expired" entries
-    //TODO: query impl
-    //TODO: resource properties impl
+
+    // TODO: sweeperthread to look for "expired" entries
+    // TODO: query impl
+    // TODO: resource properties impl
 
     private static final Logger LOG = Logger.getLogger(IndexServiceImpl.class.getName());
 
@@ -57,6 +57,17 @@ public class IndexServiceImpl implements IndexService {
             return oldTermTime;
         } else {
             LOG.log(Level.FINEST, "Unable to find entry for request to set termination time:" + entryID);
+            throw new ResourceUnknownFault();
+        }
+    }
+
+    @Override
+    public EntryType getEntry(String entryID) throws ResourceUnknownFault {
+        EntryHolder entryHolder = entries.get(entryID);
+        if (entryHolder != null) {
+            return entryHolder.getEntry();
+        } else {
+            LOG.log(Level.FINEST, "Unable to find entry for request to get entry:" + entryID);
             throw new ResourceUnknownFault();
         }
     }

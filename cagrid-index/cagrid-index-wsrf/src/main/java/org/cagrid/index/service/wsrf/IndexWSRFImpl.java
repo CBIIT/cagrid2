@@ -94,42 +94,39 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
             Map<String, ResourcePropertyDescriptor<?>> descriptorsByField = ResourcePropertyDescriptor
                     .mapByField(resourcePropertyDescriptors);
 
-            // // The rest of the properties are callbacks.
-            // @SuppressWarnings("unchecked")
-            // ResourcePropertyDescriptor<Calendar> authenticationProfilesDescriptor =
-            // (ResourcePropertyDescriptor<Calendar>) descriptorsByField
-            // .get("currentTime");
-            // // Must treat auth profiles as Element!
-            // ResourcePropertyDescriptor<Element> authenticationProfilesElementDescriptor = new
-            // ResourcePropertyDescriptor<Element>(
-            // authenticationProfilesDescriptor.getResourcePropertyQName(), Element.class,
-            // authenticationProfilesDescriptor.getFieldName());
-            //
-            // ExternalSingletonResourcePropertyValue<Element> propertyValue = new
-            // ExternalSingletonResourcePropertyValue<Element>() {
-            // @Override
-            // public Element getPropertyValue() {
-            // return getAuthenticationProfilesElement();
-            // }
-            // };
-            // ResourceProperty<Element> resourceProperty = new ExternalSingletonResourceProperty<Element>(
-            // authenticationProfilesElementDescriptor, propertyValue);
-            // resource.add(resourceProperty);
-            // }
+            {
+                @SuppressWarnings("unchecked")
+                ResourcePropertyDescriptor<Calendar> timeDescriptor = (ResourcePropertyDescriptor<Calendar>) descriptorsByField
+                        .get("currentTime");
+                if (timeDescriptor != null) {
+                    ExternalSingletonResourcePropertyValue<Calendar> propertyValue = new ExternalSingletonResourcePropertyValue<Calendar>() {
+                        @Override
+                        public Calendar getPropertyValue() {
+                            return getCurrentTime();
+                        }
+                    };
+                    ResourceProperty<Calendar> resourceProperty = new ExternalSingletonResourceProperty<Calendar>(
+                            timeDescriptor, propertyValue);
+                    resource.add(resourceProperty);
+                }
+            }
 
-            @SuppressWarnings("unchecked")
-            ResourcePropertyDescriptor<Calendar> timeDescriptor = (ResourcePropertyDescriptor<Calendar>) descriptorsByField
-                    .get("currentTime");
-            if (timeDescriptor != null) {
-                ExternalSingletonResourcePropertyValue<Calendar> propertyValue = new ExternalSingletonResourcePropertyValue<Calendar>() {
-                    @Override
-                    public Calendar getPropertyValue() {
-                        return getCurrentTime();
-                    }
-                };
-                ResourceProperty<Calendar> resourceProperty = new ExternalSingletonResourceProperty<Calendar>(
-                        timeDescriptor, propertyValue);
-                resource.add(resourceProperty);
+            {
+                @SuppressWarnings("unchecked")
+                ResourcePropertyDescriptor<Calendar> termTimeDescriptor = (ResourcePropertyDescriptor<Calendar>) descriptorsByField
+                        .get("terminationTime");
+                if (termTimeDescriptor != null) {
+                    ExternalSingletonResourcePropertyValue<Calendar> propertyValue = new ExternalSingletonResourcePropertyValue<Calendar>() {
+                        @Override
+                        public Calendar getPropertyValue() {
+                            // we don't really support termination
+                            return null;
+                        }
+                    };
+                    ResourceProperty<Calendar> resourceProperty = new ExternalSingletonResourceProperty<Calendar>(
+                            termTimeDescriptor, propertyValue);
+                    resource.add(resourceProperty);
+                }
             }
 
         } catch (Exception e) {
@@ -155,13 +152,17 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
                     ResourceProperty<?> resourceProperty = resourcePropertySet.get(qname);
                     if (resourceProperty != null) {
                         Object resourcePropertyValue = resourceProperty.get(0);
-                        LOG.info("getResourceProperty " + qname + " returning " + resourcePropertyValue);
-                        if (!(resourcePropertyValue instanceof Node)
+                        LOG.info("getResourceProperty " + qname + " value is " + resourcePropertyValue);
+                        if (resourcePropertyValue == null) {
+                            resourcePropertyValue = new JAXBElement(resourceProperty.getMetaData().getName(),
+                                    resourceProperty.getMetaData().getType(), null);
+                        } else if (!(resourcePropertyValue instanceof Node)
                                 && !(resourcePropertyValue instanceof JAXBElement<?>)) {
                             // TODO: what to do for other types
                             resourcePropertyValue = JAXBUtils.wrap(resourcePropertyValue, resourceProperty
                                     .getMetaData().getName());
                         }
+                        LOG.info("getResourceProperty " + qname + " returning " + resourcePropertyValue);
                         response.getAny().add(resourcePropertyValue);
                     }
                 }
@@ -191,7 +192,11 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
                 if (resourceProperty != null) {
                     Object resourcePropertyValue = resourceProperty.get(0);
                     LOG.info("getResourceProperty " + resourcePropertyQName + " returning " + resourcePropertyValue);
-                    if (!(resourcePropertyValue instanceof Node) && !(resourcePropertyValue instanceof JAXBElement<?>)) {
+                    if (resourcePropertyValue == null) {
+                        resourcePropertyValue = new JAXBElement(resourceProperty.getMetaData().getName(),
+                                resourceProperty.getMetaData().getType(), null);
+                    } else if (!(resourcePropertyValue instanceof Node)
+                            && !(resourcePropertyValue instanceof JAXBElement<?>)) {
                         // TODO: what to do for other types
                         resourcePropertyValue = JAXBUtils.wrap(resourcePropertyValue, resourceProperty.getMetaData()
                                 .getName());
