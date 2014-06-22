@@ -9,6 +9,7 @@
 				<ref bean="Upgrade1_2To1_3" />
 				<ref bean="Upgrade1_3To1_4" />
 				<ref bean="Upgrade1_4To2_0" />
+                <ref bean="Upgrade2_0To2_1" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -27,4 +28,7 @@
 		<property name="caPrivateKeyFile"
 			value="/Users/langella/work/caGrid/environments/keys/training-dorian-sha1-ca-key.pem" />
 	</bean>
+    <bean id="Upgrade2_0To2_1"
+          class="org.cagrid.dorian.service.tools.upgrader.Upgrade2_0To2_1">
+    </bean>
 </beans>	
