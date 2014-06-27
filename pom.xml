@@ -456,8 +456,8 @@
 		</repository>
 	</distributionManagement>
 	<scm>
-		<connection>scm:git:git://github.com/NCIP/cagrid2.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/NCIP/cagrid2.git</developerConnection>
+		<connection>scm:git:git://github.com/CBIIT/cagrid2.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/CBIIT/cagrid2.git</developerConnection>
 		<url>https://github.com/CBIIT/cagrid2</url>
 		<tag>HEAD</tag>
 	</scm>
