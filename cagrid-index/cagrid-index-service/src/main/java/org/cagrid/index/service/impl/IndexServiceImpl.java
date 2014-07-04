@@ -1,6 +1,8 @@
 package org.cagrid.index.service.impl;
 
+import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -13,14 +15,15 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.Entr
 
 public class IndexServiceImpl implements IndexService {
 
-    // TODO: sweeperthread to look for "expired" entries
     // TODO: query impl
-    // TODO: resource properties impl
-
     private static final Logger LOG = Logger.getLogger(IndexServiceImpl.class.getName());
 
     // TODO: replace this with the xml db
     private Map<String, EntryHolder> entries = new HashMap<String, EntryHolder>();
+
+    public IndexServiceImpl() {
+        LOG.info("Starting up IndexService");
+    }
 
     public String add(EntryType entry, Calendar termTime) {
         String entryId = UUID.randomUUID().toString();
@@ -72,4 +75,73 @@ public class IndexServiceImpl implements IndexService {
         }
     }
 
+    /** Gets rid of dead registrations */
+    public void sweepEntries() {
+        // statistics for this sweep run
+        int totalSwept = 0;
+        int totalKept = 0;
+        int totalRemoved = 0;
+
+        LOG.info("Starting sweep");
+
+        DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.FULL);
+
+        for (String key : entries.keySet()) {
+            totalSwept++;
+            try {
+
+                EntryHolder entryResource = entries.get(key);
+                // ResourceKey entryResourceKey = (ResourceKey) entryResource.getEntryId() getKey();
+
+                Calendar now = new GregorianCalendar();
+                Calendar termination = entryResource.getTerminationTime();
+
+                if (termination == null) {
+                    LOG.finest("Entry has infinite lifetime: " + entryResource.getEntry().getMemberServiceEPR());
+                } else {
+                    LOG.finest("Checking entry: now=" + dateFormat.format(now.getTime()) + ", termination="
+                            + dateFormat.format(termination.getTime()));
+
+                    // if termination time is in past
+                    if (now.after(termination)) {
+                        LOG.fine("Removing entry (" + key + ") with address: "
+                                + entryResource.getEntry().getMemberServiceEPR().getAddress().getValue()
+                                + " as termination time=" + dateFormat.format(termination.getTime())
+                                + " is in the past.");
+                        entries.remove(key);
+
+                        // TODO: do i need to do something like this?
+                        // try {
+                        // AggregatorSource source = entryResource.getAggregatorSource();
+                        // if (source != null) {
+                        // source.removeAggregation(sessionKey);
+                        // }
+                        // } catch (Exception e) {
+                        // LOG.warn("Error while removing aggregation" + e);
+                        // }
+                        // try {
+                        // entryResource.remove();
+                        // } catch (Exception e) {
+                        // LOG.warn("Error while invoking resource remove method: " + e);
+                        // }
+                        // entries.remove(entryResourceKey);
+                        // sessionKeys.remove(entryResourceKey);
+
+                        totalRemoved++;
+                    } else {
+                        totalKept++;
+                    }
+                }
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, "Exception in entry sweeper thread: ", e);
+                break;
+            }
+        }
+        if (totalRemoved > 0) {
+            // TODO: for ws-notification
+            // notifyChange();
+        }
+        LOG.info("Finished sweep, with " + totalKept + " entries kept, " + totalRemoved + " entries removed, out of "
+                + totalSwept + " entries.");
+    }
 }

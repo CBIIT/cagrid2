@@ -8,6 +8,8 @@
 >
 
     <osgix:cm-properties id="preProps" persistent-id="cagrid.index.service">
+        <prop key="cagrid.index.service.sweeper.start.delay">10000</prop> <!-- wait 10 seconds before trying to sweep -->
+        <prop key="cagrid.index.service.sweeper.repeat.interval">300000</prop> <!-- remove old entries once every 5 mins -->
         <!-- TODO: test that these work as null, as index won't have credentials -->
         <prop key="cagrid.index.service.client.keystorefile"></prop>
         <prop key="cagrid.index.service.client.keystorepassword"></prop>
@@ -17,12 +19,33 @@
         <prop key="cagrid.index.service.client.truststorePassword"></prop>
         <prop key="cagrid.index.service.client.configurer">truststoreClientConfigurer</prop>
     </osgix:cm-properties>
-
     <ctx:property-placeholder properties-ref="preProps"/>
 
+
     <osgi:service ref="index" interface="org.cagrid.index.service.IndexService"/>
-    
     <osgi:reference id="trustService" cardinality="0..1" interface="org.cagrid.trust.service.TrustService"/>
+
+
+    <bean id="scheduledSweep" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="startDelay" value="${cagrid.index.service.sweeper.start.delay}"/>
+        <property name="repeatInterval" value="${cagrid.index.service.sweeper.repeat.interval}"/>
+        <property name="jobDetail" ref="timedSweep"/>
+    </bean>
+
+    <bean id="timedSweep" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="index"/>
+        <property name="targetMethod" value="sweepEntries"/>
+        <property name="concurrent" value="false"/>
+        <property name="name" value="IndexServiceSweeper"/>
+    </bean>
+
+    <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="scheduledSweep"/>
+            </list>
+        </property>
+    </bean>
 
 
     <!-- TODO: create wsrf-rp client for get getMultiple and query, using the configurer -->

@@ -130,7 +130,7 @@ public class IndexEntryWSRFImpl extends BigIndexEntryPortTypeImpl {
         try {
             return this.indexService.getEntryTerminationTime(entryId);
         } catch (org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault e) {
-            throw new ResourceUnknownFault("Unable to locate entry" + entryId);
+            throw new ResourceUnknownFault("Unable to locate entry: " + entryId);
         }
 
     }
@@ -218,7 +218,7 @@ public class IndexEntryWSRFImpl extends BigIndexEntryPortTypeImpl {
         try {
             entry = this.indexService.getEntry(entryId);
         } catch (org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault ruf) {
-            throw new ResourceUnknownFault("Unable to locate entry" + entryId);
+            throw new ResourceUnknownFault("Unable to locate entry: " + entryId);
         }
         return entry;
     }
