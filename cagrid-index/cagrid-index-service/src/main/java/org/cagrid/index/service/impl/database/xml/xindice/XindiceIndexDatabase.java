@@ -195,6 +195,10 @@ public class XindiceIndexDatabase {
         }
         return docID;
     }
+    
+    public String[] listDocuments(String collectionURI) throws Exception {
+        return this.db.listCollectionDocuments(collectionURI);
+    }
 
     public Object getDocument(String colURI, String docName, boolean asString) throws Exception {
         Object result;

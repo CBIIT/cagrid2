@@ -1,6 +1,7 @@
 package org.cagrid.index.service.impl;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -192,5 +193,14 @@ public class IndexServiceImpl implements IndexService {
         }
         LOG.info("Finished sweep, with " + totalKept + " entries kept, " + totalRemoved + " entries removed, out of "
                 + totalSwept + " entries.");
+        if (LOG.isLoggable(Level.FINEST)) {
+            try {
+                LOG.log(Level.FINEST,
+                        "Found document ids:"
+                                + Arrays.toString(this.db.listDocuments(this.db.getDefaultCollectionURI())));
+            } catch (Exception e) {
+                LOG.log(Level.FINEST, "Problem listing document ids", e);
+            }
+        }
     }
 }
