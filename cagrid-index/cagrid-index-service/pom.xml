@@ -9,6 +9,20 @@
     <packaging>bundle</packaging>
     <name>caGrid Index Service</name>
 
+    <repositories>
+        <repository>
+            <id>lib</id>
+            <name>lib</name>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>file://${project.basedir}/lib</url>
+        </repository>
+    </repositories>
     <build>
         <plugins>
             <plugin>
@@ -26,10 +40,11 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package/>
-                        <Private-Package> org.cagrid.index.service.impl
-                        </Private-Package>
+                        <Embed-Dependency>xindice</Embed-Dependency>
+                        <Private-Package> org.cagrid.index.service.impl*</Private-Package>
                         <Import-Package>
                             !org.apache.commons.cli,
+                            !org.apache.tools.ant,
                             org.quartz,
                             org.quartz.simpl,
                             org.quartz.spi,
@@ -94,6 +109,14 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.quartz</artifactId>
+        </dependency>
+
+        <!-- <dependency> <groupId>com.yammer.metrics</groupId> <artifactId>metrics-core</artifactId> <version>2.1.3</version> </dependency> -->
+
+        <dependency>
+            <groupId>org.apache.xindice</groupId>
+            <artifactId>xindice</artifactId>
+            <version>1.1</version>
         </dependency>
 
     </dependencies>

@@ -201,6 +201,11 @@
     <!-- Index -->
     <feature name="cagrid-index" version="${project.version}">
         <feature version="${project.version}">cagrid-base</feature>
+        <bundle>wrap:mvn:xmldb/xmldb-api/${xmldb/xmldb-api/version}</bundle>
+        <bundle>wrap:mvn:xmldb/xmldb-api-sdk/${xmldb/xmldb-api-sdk/version}</bundle>
+        <bundle>wrap:mvn:xmldb/xmldb-common/${xmldb/xmldb-common/version}</bundle>
+        <bundle>wrap:mvn:xmldb/xmldb-xupdate/${xmldb/xmldb-xupdate/version}</bundle>
+        <bundle>wrap:mvn:xmlrpc/xmlrpc/${xmlrpc/xmlrpc/version}</bundle>
         <bundle>mvn:${project.groupId}/cagrid-trust-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/cagrid-index-aggregator-api/${project.version}</bundle>
         <bundle>mvn:${project.groupId}/cagrid-index-api/${project.version}</bundle>

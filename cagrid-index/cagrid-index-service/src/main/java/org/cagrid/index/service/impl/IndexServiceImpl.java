@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.cagrid.index.service.IndexService;
+import org.cagrid.index.service.impl.database.xml.xindice.XindiceIndexDatabase;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 
@@ -20,9 +21,12 @@ public class IndexServiceImpl implements IndexService {
 
     // TODO: replace this with the xml db
     private Map<String, EntryHolder> entries = new HashMap<String, EntryHolder>();
+    private XindiceIndexDatabase db;
 
     public IndexServiceImpl() {
         LOG.info("Starting up IndexService");
+        // initialize database
+        this.initializeDatabase();
     }
 
     public String add(EntryType entry, Calendar termTime) {
@@ -73,6 +77,27 @@ public class IndexServiceImpl implements IndexService {
             LOG.log(Level.FINEST, "Unable to find entry for request to get entry:" + entryID);
             throw new ResourceUnknownFault();
         }
+    }
+
+    public XindiceIndexDatabase getDatabase() {
+        return this.db;
+    }
+
+    private void initializeDatabase() {
+        // initialize database
+        // TODO: what to use here?
+        // MessageContext context = MessageContext.getCurrentContext();
+        // String serviceName = ContextUtils.getTargetServicePath(context);
+        // String serviceAddr = ServiceHost.getHost() + "." + Integer.toString(ServiceHost.getPort());
+        // String rootCollectionName = serviceAddr + "." + serviceName;
+
+        String rootCollectionName = this.getClass().getName() + ".XMLDB";
+        this.db = new XindiceIndexDatabase(rootCollectionName);
+
+        LOG.fine("Initialized database rootCollection: " + rootCollectionName);
+
+        // this.checkpointThread.setDaemon(true);
+        // this.checkpointThread.start();
     }
 
     /** Gets rid of dead registrations */
