@@ -5,7 +5,10 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
+
+import org.cagrid.index.aggregator.types.AggregatorContent;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 
 
@@ -32,6 +35,7 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.Entr
  * 
  * 
  */
+@XmlSeeAlso(AggregatorContent.class)
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BigIndexEntry", propOrder = {
     "entry"

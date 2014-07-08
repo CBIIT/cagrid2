@@ -9,10 +9,13 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.cagrid.core.common.JAXBUtils;
 import org.cagrid.index.service.IndexService;
 import org.cagrid.index.service.impl.database.xml.xindice.XindiceIndexDatabase;
+import org.cagrid.index.types.BigIndexEntry;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
+import org.w3c.dom.Element;
 
 public class IndexServiceImpl implements IndexService {
 
@@ -38,6 +41,38 @@ public class IndexServiceImpl implements IndexService {
         holder.setTerminationTime(termTime);
         LOG.log(Level.FINEST, "Adding entry:" + holder);
         entries.put(entryId, holder);
+
+        // TODO:for content RP
+        // BigIndexContent indexContent = new BigIndexContent();
+        // indexContent.setContentID(entryId);
+        // indexContent.setContent(entry.getContent());
+
+        // this.db.
+
+        String collectionURI = this.db.getDefaultCollectionURI();
+
+        BigIndexEntry bigEntry = new BigIndexEntry();
+        bigEntry.setEntry(entry);
+        // String document = ObjectSerializer.toString(bigEntry, bigEntry.getTypeDesc().getXmlType());
+        Element element = null;
+        try {
+            element = JAXBUtils.marshalToElement(bigEntry);
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "Unable to marshall entry!", e);
+        }
+
+        try {
+            if (element != null) {
+                this.db.addDocument(collectionURI, entryId, element, false);
+
+                if (LOG.isLoggable(Level.FINEST)) {
+                    String document = (String) this.db.getDocument(collectionURI, entryId, true);
+                    LOG.finest("Stored doc:" + document);
+                }
+            }
+        } catch (Exception e) {
+            LOG.log(Level.WARNING, "Unable to save entry to database!", e);
+        }
 
         return entryId;
     }
@@ -85,7 +120,7 @@ public class IndexServiceImpl implements IndexService {
 
     private void initializeDatabase() {
         // initialize database
-        // TODO: what to use here?
+        // TODO: what to use here? use a config property?
         // MessageContext context = MessageContext.getCurrentContext();
         // String serviceName = ContextUtils.getTargetServicePath(context);
         // String serviceAddr = ServiceHost.getHost() + "." + Integer.toString(ServiceHost.getPort());
@@ -96,6 +131,7 @@ public class IndexServiceImpl implements IndexService {
 
         LOG.fine("Initialized database rootCollection: " + rootCollectionName);
 
+        // TODO: what is this actually for? seems to shutdown the db manager
         // this.checkpointThread.setDaemon(true);
         // this.checkpointThread.start();
     }
@@ -134,23 +170,11 @@ public class IndexServiceImpl implements IndexService {
                                 + " as termination time=" + dateFormat.format(termination.getTime())
                                 + " is in the past.");
                         entries.remove(key);
-
-                        // TODO: do i need to do something like this?
-                        // try {
-                        // AggregatorSource source = entryResource.getAggregatorSource();
-                        // if (source != null) {
-                        // source.removeAggregation(sessionKey);
-                        // }
-                        // } catch (Exception e) {
-                        // LOG.warn("Error while removing aggregation" + e);
-                        // }
-                        // try {
-                        // entryResource.remove();
-                        // } catch (Exception e) {
-                        // LOG.warn("Error while invoking resource remove method: " + e);
-                        // }
-                        // entries.remove(entryResourceKey);
-                        // sessionKeys.remove(entryResourceKey);
+                        try {
+                            this.db.removeDocument(this.db.getDefaultCollectionURI(), key);
+                        } catch (Exception e) {
+                            LOG.warning("Error while removing document from database:" + e);
+                        }
 
                         totalRemoved++;
                     } else {
