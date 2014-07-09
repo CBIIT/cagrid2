@@ -1,7 +1,10 @@
 
 package org.cagrid.index.types;
 
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
+import javax.xml.namespace.QName;
 
 
 /**
@@ -21,6 +24,8 @@ import javax.xml.bind.annotation.XmlRegistry;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _BigIndexContent_QNAME = new QName("http://mds.globus.org/bigindex/2008/11/24/types", "BigIndexContent");
+    private final static QName _BigIndexEntry_QNAME = new QName("http://mds.globus.org/bigindex/2008/11/24/types", "BigIndexEntry");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.cagrid.index.types
@@ -30,11 +35,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BigIndexContentIDList }
+     * Create an instance of {@link BigIndexEntry }
      * 
      */
-    public BigIndexContentIDList createBigIndexContentIDList() {
-        return new BigIndexContentIDList();
+    public BigIndexEntry createBigIndexEntry() {
+        return new BigIndexEntry();
     }
 
     /**
@@ -46,11 +51,29 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link BigIndexEntry }
+     * Create an instance of {@link BigIndexContentIDList }
      * 
      */
-    public BigIndexEntry createBigIndexEntry() {
-        return new BigIndexEntry();
+    public BigIndexContentIDList createBigIndexContentIDList() {
+        return new BigIndexContentIDList();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BigIndexContent }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/bigindex/2008/11/24/types", name = "BigIndexContent")
+    public JAXBElement<BigIndexContent> createBigIndexContent(BigIndexContent value) {
+        return new JAXBElement<BigIndexContent>(_BigIndexContent_QNAME, BigIndexContent.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link BigIndexEntry }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/bigindex/2008/11/24/types", name = "BigIndexEntry")
+    public JAXBElement<BigIndexEntry> createBigIndexEntry(BigIndexEntry value) {
+        return new JAXBElement<BigIndexEntry>(_BigIndexEntry_QNAME, BigIndexEntry.class, null, value);
     }
 
 }

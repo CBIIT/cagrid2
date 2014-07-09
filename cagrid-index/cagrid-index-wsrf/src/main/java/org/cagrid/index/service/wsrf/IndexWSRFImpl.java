@@ -219,10 +219,18 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
     }
 
     @Override
-    public GetContentResponse getContent(BigIndexContentIDList getContentRequest) {
-        // TODO: pull the content from the service
-        // TODO Auto-generated method stub
-        return super.getContent(getContentRequest);
+    public GetContentResponse getContent(BigIndexContentIDList request) {
+        LOG.fine("GetContentProvider GetContent called");
+
+        if ((request == null) || ((request != null) && (request.getContentID() == null))) {
+            // no advertised faults :/
+            throw new RuntimeException("Invalid parameter");
+        }
+
+        GetContentResponse response = new GetContentResponse();
+        response.getBigIndexContent().addAll(this.indexService.getContent(request.getContentID()));
+
+        return response;
     }
 
     public Calendar getCurrentTime() {

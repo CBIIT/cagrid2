@@ -1,7 +1,9 @@
 package org.cagrid.index.service;
 
 import java.util.Calendar;
+import java.util.List;
 
+import org.cagrid.index.types.BigIndexContent;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 
@@ -14,5 +16,7 @@ public interface IndexService {
     public Calendar getEntryTerminationTime(String entryID) throws ResourceUnknownFault;
 
     public Calendar setEntryTerminationTime(String entryID, Calendar termTime) throws ResourceUnknownFault;
+
+    public List<BigIndexContent> getContent(List<String> contentIds);
 
 }

@@ -1,10 +1,13 @@
 package org.cagrid.index.service.impl;
 
+import java.io.StringReader;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -13,10 +16,12 @@ import java.util.logging.Logger;
 import org.cagrid.core.common.JAXBUtils;
 import org.cagrid.index.service.IndexService;
 import org.cagrid.index.service.impl.database.xml.xindice.XindiceIndexDatabase;
+import org.cagrid.index.types.BigIndexContent;
 import org.cagrid.index.types.BigIndexEntry;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
 public class IndexServiceImpl implements IndexService {
 
@@ -117,6 +122,40 @@ public class IndexServiceImpl implements IndexService {
 
     public XindiceIndexDatabase getDatabase() {
         return this.db;
+    }
+
+    @Override
+    public List<BigIndexContent> getContent(List<String> contentIDs) {
+        // get db instance
+        XindiceIndexDatabase db = getDatabase();
+        if (db == null) {
+            throw new RuntimeException("Error: database instance is null");
+        }
+        if (contentIDs == null) {
+            throw new IllegalArgumentException("No contentIDs provided!");
+        }
+
+        String colURI = db.getDefaultCollectionURI();
+        List<BigIndexContent> results = new ArrayList<BigIndexContent>(contentIDs.size());
+
+        for (String id : contentIDs) {
+            try {
+                String doc = (String) db.getDocument(colURI, id, true);
+                BigIndexEntry bigEntry = JAXBUtils.unmarshal(BigIndexEntry.class, doc);
+                BigIndexContent content = new BigIndexContent();
+                content.setContentID(id);
+                EntryType entry = bigEntry.getEntry();
+                if (entry != null) {
+                    content.setContent(entry.getContent());
+                }
+                results.add(content);
+            } catch (Exception e) {
+                LOG.log(Level.FINE, "Exception getting a document from the database: " + e.getMessage(), e);
+                continue;
+            }
+        }
+
+        return results;
     }
 
     private void initializeDatabase() {
