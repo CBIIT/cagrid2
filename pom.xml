@@ -504,5 +504,6 @@
 		<module>cagrid-trust</module>
 		<module>cagrid-mms</module>
 		<module>cagrid-index</module>
+		<module>cagrid-authentication</module>
 	</modules>
 </project>
