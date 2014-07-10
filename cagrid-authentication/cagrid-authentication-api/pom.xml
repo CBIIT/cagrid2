@@ -3,14 +3,14 @@
 	<parent>
 		<groupId>org.cagrid</groupId>
 		<artifactId>cagrid-authentication</artifactId>
-		<version>2.0.6</version>
+		<version>2.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cagrid-authentication-api</artifactId>
 	<packaging>bundle</packaging>
 	<name>caGrid Authentication API</name>
 
 	<properties>
-		<authentication.wsdl.path>schema/org/cagrid/AuthenticationService/AuthenticationService.wsdl</authentication.wsdl.path>
+		<authentication.wsdl.path>schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl</authentication.wsdl.path>
 	</properties>
 
 	<profiles>
@@ -29,7 +29,7 @@
 								<sourceRoot>work/generated/cxf</sourceRoot>
 									<wsdlOptions>
 										<wsdlOption>
-											<wsdl>${basedir}/work/schema/org/cagrid/AuthenticationService/AuthenticationService.wsdl</wsdl>
+											<wsdl>${basedir}/work/schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl</wsdl>
 											<wsdlLocation>/${authentication.wsdl.path}</wsdlLocation>
 											<extraargs>
 												<extraarg>-autoNameResolution</extraarg>
@@ -39,13 +39,23 @@
 
 												<extraarg>-p</extraarg>
 												<extraarg>http://cagrid.nci.nih.gov/AuthenticationService=org.cagrid.authenticationService</extraarg>
-
-												<extraarg>-nexclude</extraarg>
-												<extraarg>http://gaards.cagrid.org/authentication-faults=org.cagrid.gaards.authentication.faults</extraarg>
-												<extraarg>-nexclude</extraarg>
+												<extraarg>-p</extraarg>
 												<extraarg>http://cagrid.nci.nih.gov/1/authentication-service=org.cagrid.gaards.authentication.service</extraarg>
-												<extraarg>-nexclude</extraarg>
+												<extraarg>-p</extraarg>
+												<extraarg>http://cagrid.nci.nih.gov/1/AuthenticationService=org.cagrid.authenticationService.model</extraarg>
+												<extraarg>-p</extraarg>
+												<extraarg>http://cagrid.nci.nih.gov/AuthenticationService=org.cagrid.authenticationService.wsrf.stubs</extraarg>
+												<extraargs>-p</extraargs>
+												<extraarg>http://cagrid.nci.nih.gov/AuthenticationService/types=org.cagrid.authenticationService.types</extraarg>
+												<extraargs>-p</extraargs>
+												<extraarg>http://cagrid.nci.nih.gov/AuthenticationService/service=org.cagrid.authenticationService.wsrf.service</extraarg>
+												<extraarg>-p</extraarg>
+												<extraarg>http://gaards.cagrid.org/authentication-faults=org.cagrid.gaards.authentication.faults</extraarg>
+												<extraarg>-p</extraarg>
 												<extraarg>http://authentication.gaards.cagrid.org/AuthenticationService/types=org.cagrid.gaards.authentication.types</extraarg>
+												
+												<extraarg>-nexclude</extraarg>
+												<extraarg>http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity=org.cagrid.gaards.security.servicesecurity</extraarg>
 												<extraarg>-nexclude</extraarg>
 												<extraarg>urn:oasis:names:tc:SAML:1.0:assertion=org.oasis.names.tc.saml.assertion</extraarg>
 												<extraarg>-nexclude</extraarg>
@@ -66,6 +76,7 @@
 												<extraarg>http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.xsd</extraarg>
 												<extraarg>-nexclude</extraarg>
 												<extraarg>http://docs.oasis-open.org/wsrf/2004/06/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl</extraarg>
+												
 											</extraargs>
 											<bindingFiles>
 												<bindingFile>work/schema/jaxb-binding.xjb</bindingFile>
@@ -231,18 +242,22 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>cagrid-gaards-api</artifactId>
         </dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>cagrid-metadata-model</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>cagrid-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${wsrf.group}</groupId>
-			<artifactId>ws-model</artifactId>
-		</dependency>
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>cagrid-opensaml-api</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>cagrid-metadata-model</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>${project.groupId}</groupId>
+		<artifactId>cagrid-core</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>${wsrf.group}</groupId>
+		<artifactId>ws-model</artifactId>
+	</dependency>
         <dependency>
             <groupId>${wsrf.group}</groupId>
             <artifactId>wsrf-lifetime-api</artifactId>

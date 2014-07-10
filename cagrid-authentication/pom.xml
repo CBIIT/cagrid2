@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>org.cagrid</groupId>
 		<artifactId>cagrid-osgi</artifactId>
-		<version>2.0.6</version>
+		<version>2.1.0-SNAPSHOT</version>
 	</parent>
 	<artifactId>cagrid-authentication</artifactId>
 	<packaging>pom</packaging>
@@ -129,10 +129,10 @@
 
     <modules>
         <module>cagrid-authentication-api</module>
+        <module>cagrid-authentication-service</module>
+        <module>cagrid-authentication-wsrf</module>
+        <module>cagrid-authentication-soap-client</module>
 <!--
-        <module>cagrid-gme-service</module>
-        <module>cagrid-gme-wsrf</module>
-        <module>cagrid-gme-soap-client</module>
         <module>cagrid-gme-systest</module>
 	<module>cagrid-gme-service-tools</module>
 -->

@@ -39,7 +39,7 @@ public class AuthenticateUserResponse
 {
 
     @XmlElement(name = "Assertion", namespace = "urn:oasis:names:tc:SAML:1.0:assertion", required = true)
-    protected SAMLAssertion assertion;
+    protected gov.nih.nci.cagrid.opensaml.SAMLAssertion assertion;
 
     /**
      * Gets the value of the assertion property.
@@ -49,7 +49,7 @@ public class AuthenticateUserResponse
      *     {@link SAMLAssertion }
      *     
      */
-    public SAMLAssertion getAssertion() {
+    public gov.nih.nci.cagrid.opensaml.SAMLAssertion getAssertion() {
         return assertion;
     }
 
@@ -61,7 +61,7 @@ public class AuthenticateUserResponse
      *     {@link SAMLAssertion }
      *     
      */
-    public void setAssertion(SAMLAssertion value) {
+    public void setAssertion(gov.nih.nci.cagrid.opensaml.SAMLAssertion value) {
         this.assertion = value;
     }
 

@@ -54,22 +54,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetLockedOutUsersResponse }
-     * 
-     */
-    public GetLockedOutUsersResponse createGetLockedOutUsersResponse() {
-        return new GetLockedOutUsersResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetLockedOutUsersRequest }
-     * 
-     */
-    public GetLockedOutUsersRequest createGetLockedOutUsersRequest() {
-        return new GetLockedOutUsersRequest();
-    }
-
-    /**
      * Create an instance of {@link AuthenticateUserRequest.Credential }
      * 
      */

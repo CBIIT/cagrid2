@@ -37,19 +37,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AuthenticationProfiles }
-     * 
-     */
-    public AuthenticationProfiles createAuthenticationProfiles() {
-        return new AuthenticationProfiles();
-    }
-
-    /**
      * Create an instance of {@link BasicAuthentication }
      * 
      */
     public BasicAuthentication createBasicAuthentication() {
         return new BasicAuthentication();
+    }
+
+    /**
+     * Create an instance of {@link AuthenticationProfiles }
+     * 
+     */
+    public AuthenticationProfiles createAuthenticationProfiles() {
+        return new AuthenticationProfiles();
     }
 
     /**
