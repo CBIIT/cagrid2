@@ -1,11 +1,5 @@
 package org.cagrid.gaards.authentication.service;
 
-import org.cagrid.authenticationService.exceptions.AuthenticationProviderException;
-import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
-import org.cagrid.authenticationService.exceptions.InsufficientAttributeException;
-import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
-import org.cagrid.core.common.FaultHelper;
-import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.opensaml.SAMLAssertion;
 
 import java.io.File;
@@ -14,6 +8,11 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 
+import org.cagrid.authenticationService.exceptions.AuthenticationProviderException;
+import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
+import org.cagrid.authenticationService.exceptions.InsufficientAttributeException;
+import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
+import org.cagrid.core.common.FaultHelper;
 import org.cagrid.gaards.authentication.BasicAuthentication;
 import org.cagrid.gaards.authentication.Credential;
 import org.cagrid.gaards.authentication.common.AuthenticationProfile;

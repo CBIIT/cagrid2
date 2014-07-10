@@ -1,43 +1,37 @@
-package org.cagrid.gaards.authentication.service;
+package org.cagrid.gaards.authentication.service.impl;
 
-import java.io.File;
+import gov.nih.nci.cagrid.metadata.ServiceMetadata;
+import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Set;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
-import org.cagrid.gaards.authentication.AuthenticationProfiles;
-import org.cagrid.gaards.authentication.AuthenticationServiceResourceProperties;
-import org.cagrid.gaards.authentication.BasicAuthentication;
-import org.cagrid.wsrf.properties.ResourceHome;
-import org.cagrid.wsrf.properties.ResourceProperty;
-import gov.nih.nci.cagrid.metadata.ServiceMetadata;
-import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.cagrid.authenticationService.exceptions.AuthenticationProviderException;
 import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
 import org.cagrid.authenticationService.exceptions.InsufficientAttributeException;
 import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
 import org.cagrid.core.common.FaultHelper;
-import org.cagrid.core.common.JAXBUtils;
 import org.cagrid.core.resource.JAXBResourceProperties;
 import org.cagrid.core.resource.JAXBResourcePropertySupport;
 import org.cagrid.core.resource.ResourceImpl;
 import org.cagrid.core.resource.ResourcePropertyDescriptor;
 import org.cagrid.core.resource.SingletonResourceHomeImpl;
-import org.cagrid.core.resource.ResourcePropertyDescriptor;
+import org.cagrid.gaards.authentication.AuthenticationProfiles;
+import org.cagrid.gaards.authentication.AuthenticationServiceResourceProperties;
 import org.cagrid.gaards.authentication.common.AuthenticationProperties;
 import org.cagrid.gaards.authentication.service.AuthenticationManager;
+import org.cagrid.gaards.authentication.service.AuthenticationProvider;
 import org.cagrid.gaards.authentication.service.AuthenticationService;
-import org.cagrid.gaards.authentication.service.Credential;
-import org.cagrid.gaards.authentication.service.SAMLAssertion;
+import org.cagrid.wsrf.properties.ResourceHome;
+import org.cagrid.wsrf.properties.ResourceProperty;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
 

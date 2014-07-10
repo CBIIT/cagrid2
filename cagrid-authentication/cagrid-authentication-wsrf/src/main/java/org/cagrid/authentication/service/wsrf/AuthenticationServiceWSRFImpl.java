@@ -3,13 +3,22 @@ package org.cagrid.authentication.service.wsrf;
 import gov.nih.nci.cagrid.metadata.ServiceMetadata;
 import gov.nih.nci.cagrid.metadata.security.ServiceSecurityMetadata;
 
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserRequest;
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticationServicePortTypeImpl;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
+import javax.xml.ws.WebServiceContext;
+
 import org.cagrid.authenticationService.exceptions.AuthenticationProviderException;
 import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
 import org.cagrid.authenticationService.exceptions.InsufficientAttributeException;
 import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
-import org.cagrid.authenticationService.wsrf.stubs.AuthenticateRequest;
 import org.cagrid.authenticationService.wsrf.stubs.AuthenticateResponse;
 import org.cagrid.authenticationService.wsrf.stubs.AuthenticationServiceResourceProperties;
 import org.cagrid.core.common.JAXBUtils;
@@ -22,7 +31,8 @@ import org.cagrid.core.resource.ResourcePropertyDescriptor;
 import org.cagrid.core.resource.SingletonResourceHomeImpl;
 import org.cagrid.gaards.authentication.AuthenticationProfiles;
 import org.cagrid.gaards.authentication.BasicAuthentication;
-import org.cagrid.gaards.authentication.WebServiceCallerId;
+import org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserRequest;
+import org.cagrid.gaards.authentication.authenticationservice.AuthenticationServicePortTypeImpl;
 import org.cagrid.gaards.authentication.service.AuthenticationService;
 import org.cagrid.gaards.authentication.service.SAMLAssertion;
 import org.cagrid.gaards.security.servicesecurity.GetServiceSecurityMetadataRequest;
@@ -37,7 +47,6 @@ import org.cagrid.wsrf.properties.ResourcePropertySet;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetResourcePropertyResponse;
-import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.QueryResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.QueryResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.InvalidQueryExpressionFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.InvalidResourcePropertyQNameFault;
@@ -46,18 +55,6 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_0
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.UnknownQueryExpressionDialectFault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
-import javax.xml.ws.WebServiceContext;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
