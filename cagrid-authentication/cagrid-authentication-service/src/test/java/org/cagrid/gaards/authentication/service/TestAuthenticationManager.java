@@ -30,9 +30,9 @@ import org.cagrid.gaards.saml.encoding.SAMLUtils;
 public class TestAuthenticationManager extends TestCase {
 
 	public static final File SUBJECT_PROVIDER_1_CONF = new File(
-			"test/resources/authentication-config-subject-provider1.xml");
+			"src/test/resources/authentication-config-subject-provider1.xml");
 	public static final File SUBJECT_PROVIDER_2_CONF = new File(
-			"test/resources/authentication-config-subject-provider2.xml");
+			"src/test/resources/authentication-config-subject-provider2.xml");
 
 	public void testBasicAuthentication() {
 		AuthenticationProperties properties = null;
