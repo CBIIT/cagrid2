@@ -1,6 +1,6 @@
 package org.cagrid.index.service.impl;
 
-import java.io.StringReader;
+import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +21,6 @@ import org.cagrid.index.types.BigIndexEntry;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 public class IndexServiceImpl implements IndexService {
 
@@ -241,5 +240,17 @@ public class IndexServiceImpl implements IndexService {
                 LOG.log(Level.FINEST, "Problem listing document ids", e);
             }
         }
+    }
+
+    @Override
+    public List<Element> query(String queryStr) throws Exception {
+        // get db instance
+        XindiceIndexDatabase db = getDatabase();
+        if (db == null) {
+            throw new RuntimeException("Error: database instance is null");
+        }
+
+        // TODO: fix this awful use of "throw new Exception() in globus code"
+        return db.query(queryStr, null);
     }
 }

@@ -18,6 +18,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -243,14 +244,14 @@ public class XindiceIndexDatabase {
         }
     }
 
-    public List query(String xpath, String[] namespaces) throws Exception {
+    public List<Element> query(String xpath, String[] namespaces) throws Exception {
         // if (this.isProfiling) {
         // this.performanceLogger.start();
         // }
 
         String URI = this.baseURI + "/" + this.rootCollectionName;
 
-        ArrayList results = new ArrayList();
+        ArrayList<Element> results = new ArrayList<Element>();
 
         if (!this.db.findCollection(this.baseURI, this.rootCollectionName)) {
             if (logger.isDebugEnabled()) {

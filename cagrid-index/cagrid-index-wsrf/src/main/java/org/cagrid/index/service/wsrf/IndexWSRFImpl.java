@@ -4,8 +4,10 @@ import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,12 +43,14 @@ import org.cagrid.wsrf.properties.ResourceHome;
 import org.cagrid.wsrf.properties.ResourceKey;
 import org.cagrid.wsrf.properties.ResourceProperty;
 import org.cagrid.wsrf.properties.ResourcePropertySet;
+import org.cagrid.wsrf.properties.WSRFConstants;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceNotDestroyedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.TerminationTimeChangeRejectedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.UnableToSetTerminationTimeFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetResourcePropertyResponse;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.QueryExpressionType;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.QueryResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.QueryResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.InvalidQueryExpressionFault;
@@ -59,6 +63,7 @@ import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.Entr
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.AddRefusedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.ContentCreationFailedFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.UnsupportedMemberInterfaceFault;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xmlsoap.schemas.ws._2004._03.addressing.AttributedURI;
 import org.xmlsoap.schemas.ws._2004._03.addressing.EndpointReferenceType;
@@ -222,7 +227,7 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
     public GetContentResponse getContent(BigIndexContentIDList request) {
         LOG.fine("GetContentProvider GetContent called");
 
-        if ((request == null) || ((request != null) && (request.getContentID() == null))) {
+        if (request == null || request.getContentID() == null) {
             // no advertised faults :/
             throw new RuntimeException("Invalid parameter");
         }
@@ -308,12 +313,99 @@ public class IndexWSRFImpl extends BigIndexPortTypeImpl {
     }
 
     @Override
-    public QueryResourcePropertiesResponse queryResourceProperties(
-            QueryResourceProperties queryResourcePropertiesRequest) throws UnknownQueryExpressionDialectFault,
-            InvalidQueryExpressionFault, QueryEvaluationErrorFault, ResourceUnknownFault,
-            InvalidResourcePropertyQNameFault {
-        // TODO Auto-generated method stub
-        return super.queryResourceProperties(queryResourcePropertiesRequest);
+    public QueryResourcePropertiesResponse queryResourceProperties(QueryResourceProperties request)
+            throws UnknownQueryExpressionDialectFault, InvalidQueryExpressionFault, QueryEvaluationErrorFault,
+            ResourceUnknownFault, InvalidResourcePropertyQNameFault {
+
+        if (request == null) {
+            // no advertised faults :/
+            throw new RuntimeException("Invalid request");
+        }
+
+        QueryExpressionType query = request.getQueryExpression();
+        String queryStr = this.getQueryString(query);
+
+        //if (this.isDatabaseQuery(queryStr)) {
+
+            List<Element> results;
+            try {
+                results = this.indexService.query(queryStr);
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, "Problem executing query (" + queryStr + "):" + e.getMessage(), e);
+                throw new QueryEvaluationErrorFault("Problem exeucting query", e);
+            }
+
+            QueryResourcePropertiesResponse response = new QueryResourcePropertiesResponse();
+            response.getContent().addAll(results);
+
+            return response;
+//        } else {
+//            // TODO: how to support this; none of the other services currently do either
+//            return super.queryResourceProperties(request);
+//        }
+
+    }
+
+    private String getQueryString(QueryExpressionType expression) throws InvalidQueryExpressionFault,
+            UnknownQueryExpressionDialectFault {
+        if (expression == null) {
+            throw new InvalidQueryExpressionFault("No query string specified");
+        }
+        if (expression.getDialect() == null) {
+            throw new UnknownQueryExpressionDialectFault("No query dialect specified.");
+        }
+        String dialect = expression.getDialect().toString();
+        if (!(dialect.equals(WSRFConstants.XPATH_1_DIALECT))) {
+            throw new UnknownQueryExpressionDialectFault("Unsupported query dialect:" + dialect
+                    + ", only supported dialect is:" + WSRFConstants.XPATH_1_DIALECT);
+        }
+
+        if (expression.getContent() == null || expression.getContent().size() < 1
+                || expression.getContent().get(0).toString().trim().length() == 0) {
+            throw new InvalidQueryExpressionFault("No query string provided.");
+        }
+
+        String query = expression.getContent().get(0).toString().trim();
+        LOG.log(Level.FINE, "Query: " + query);
+
+        return query;
+    }
+
+    /*
+     * This pattern matching is imperfect as it will fail with any potential wildcard queries against child elements
+     * that may exist in the database, but where the parent or ancestor element names(s) of that child are not found in
+     * the query string.
+     * 
+     * This limitation exists for backward compatibilty reasons. Moving forward we need to implement a separate query
+     * dialect in order to automatically dereference and search Content from the database.
+     * 
+     * For now, such wildcarded queries are supported via the service-specific query interface implemented in
+     * QueryProvider.
+     */
+    private boolean isDatabaseQuery(String query) {
+        boolean isDatabaseQuery = false;
+
+        if (query.length() == 0) {
+            return isDatabaseQuery;
+        }
+
+        /*
+         * TODO: find out which is more efficient: default to search root of Entry or start with Content (and specific
+         * children)?
+         * 
+         * Starting with Content will cause less database hits, but will force the complete resource document to be
+         * serialized more often for queries against Entry that don't explicitly include Content or one of the other
+         * Content child elements listed below.
+         */
+        isDatabaseQuery = (
+        // (query.indexOf("'Entry'")>-1) ||
+        // (query.indexOf(":Entry")>-1) ||
+        // (query.indexOf(ServiceGroupConstants.WSSG_NS)>-1) ||
+        (query.indexOf("'AggregatorData'") > -1) || (query.indexOf(":AggregatorData") > -1)
+                || (query.indexOf("'AggregatorConfig'") > -1) || (query.indexOf(":AggregatorConfig") > -1)
+                || (query.indexOf("'Content'") > -1) || (query.indexOf(":Content") > -1));
+
+        return isDatabaseQuery;
     }
 
     private EndpointReferenceType createEndpointReference(String address, ResourceKey key) {
