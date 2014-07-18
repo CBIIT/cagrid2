@@ -39,7 +39,6 @@ import org.cagrid.trust.model.TrustLevels;
 import org.cagrid.trust.model.TrustedAuthority;
 import org.cagrid.trust.model.TrustedAuthorityFilter;
 import org.cagrid.trust.model.TrustedCA;
-import org.globus.common.CoGProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,7 +300,7 @@ public class SyncGTS implements Synchronizer {
             report.setRemovedTrustedCAs(rtc);
             Message mess2 = new Message();
             mess2.setType(MessageType.INFO);
-            mess2.setValue("Successfully removed " + removeCount + " Trusted Authority(s) from " + CoGProperties.getDefault().getCaCertLocations());
+            mess2.setValue("Successfully removed " + removeCount + " Trusted Authority(s) from " + this.trustedCertificatesDirectory);
             messages.add(mess2);
             log.info(mess2.getValue());
 
