@@ -7,8 +7,10 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -185,8 +187,10 @@ public class IndexServiceImpl implements IndexService {
         LOG.info("Starting sweep");
 
         DateFormat dateFormat = DateFormat.getTimeInstance(DateFormat.FULL);
-
-        for (String key : entries.keySet()) {
+        Iterator<Entry<String, EntryHolder>> iter = entries.entrySet().iterator();
+        while (iter.hasNext()) {
+            Entry<String, EntryHolder> entry = iter.next();
+            String key=entry.getKey();
             totalSwept++;
             try {
 
@@ -208,7 +212,8 @@ public class IndexServiceImpl implements IndexService {
                                 + entryResource.getEntry().getMemberServiceEPR().getAddress().getValue()
                                 + " as termination time=" + dateFormat.format(termination.getTime())
                                 + " is in the past.");
-                        entries.remove(key);
+                        //entries.remove(key);
+                        iter.remove();
                         try {
                             this.db.removeDocument(this.db.getDefaultCollectionURI(), key);
                         } catch (Exception e) {
