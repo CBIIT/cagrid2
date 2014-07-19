@@ -1,6 +1,5 @@
 package org.cagrid.index.service.impl;
 
-import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,35 +10,91 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Timer;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.xml.bind.JAXBElement;
+
 import org.cagrid.core.common.JAXBUtils;
+import org.cagrid.core.soapclient.ClientConfigurer;
+import org.cagrid.index.aggregator.types.AggregatorConfig;
+import org.cagrid.index.aggregator.types.AggregatorContent;
+import org.cagrid.index.aggregator.types.AggregatorPollType;
+import org.cagrid.index.aggregator.types.GetMultipleResourcePropertiesPollType;
+import org.cagrid.index.aggregator.types.GetResourcePropertyPollType;
+import org.cagrid.index.aggregator.types.QueryResourcePropertiesPollType;
+import org.cagrid.index.rpaccess.client.ResourcePropertyAccessClient;
 import org.cagrid.index.service.IndexService;
 import org.cagrid.index.service.impl.database.xml.xindice.XindiceIndexDatabase;
 import org.cagrid.index.types.BigIndexContent;
 import org.cagrid.index.types.BigIndexEntry;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.AddRefusedFault;
 import org.w3c.dom.Element;
 
 public class IndexServiceImpl implements IndexService {
 
-    // TODO: query impl
     private static final Logger LOG = Logger.getLogger(IndexServiceImpl.class.getName());
 
-    // TODO: replace this with the xml db
     private Map<String, EntryHolder> entries = new HashMap<String, EntryHolder>();
     private XindiceIndexDatabase db;
+    private Timer queryTimer;
+    private Map<String, ResourcePropertyAccessClient> clientCache;
+    private Lock clientCacheLock = new ReentrantLock();
 
-    public IndexServiceImpl() {
+    private ClientConfigurer configurer = null;
+
+    public IndexServiceImpl(ClientConfigurer configurer) {
         LOG.info("Starting up IndexService");
         // initialize database
-        this.initializeDatabase();
+        initializeDatabase();
+        this.queryTimer = new Timer(true);
+        this.clientCache = new HashMap<String, ResourcePropertyAccessClient>();
+        this.configurer = configurer;
     }
 
-    public String add(EntryType entry, Calendar termTime) {
+    private ResourcePropertyAccessClient getClient(String url) throws Exception {
+        try {
+            this.clientCacheLock.lock();
+
+            if (this.clientCache.containsKey(url)) {
+                return this.clientCache.get(url);
+            } else {
+                ResourcePropertyAccessClient client = new ResourcePropertyAccessClient(url);
+                configurer.configureClient(client);
+                this.clientCache.put(url, client);
+                return client;
+            }
+        } finally {
+            this.clientCacheLock.unlock();
+        }
+    }
+
+    private boolean removeClient(String url) {
+        try {
+            this.clientCacheLock.lock();
+            if (this.clientCache.remove(url) != null) {
+                return true;
+            } else {
+                return false;
+            }
+        } finally {
+            this.clientCacheLock.unlock();
+        }
+    }
+
+    public void shutdown() {
+        if (this.queryTimer != null) {
+            this.queryTimer.cancel();
+        }
+    }
+
+    public String add(EntryType entry, Calendar termTime) throws AddRefusedFault {
         String entryId = UUID.randomUUID().toString();
 
         EntryHolder holder = new EntryHolder();
@@ -54,7 +109,53 @@ public class IndexServiceImpl implements IndexService {
         // indexContent.setContentID(entryId);
         // indexContent.setContent(entry.getContent());
 
-        // this.db.
+        Object content = entry.getContent();
+        if (content instanceof AggregatorContent) {
+            AggregatorContent agg = (AggregatorContent) content;
+            AggregatorConfig config = agg.getAggregatorConfig();
+
+            AggregatorPollType poll = null;
+            for (Object any : config.getAny()) {
+                LOG.fine("Processing config of type (" + any.getClass() + ") with info:" + any);
+
+                if (any instanceof JAXBElement) {
+                    any = ((JAXBElement) any).getValue();
+                    LOG.fine("Found a JAXBElement, extracted value (" + any.getClass() + ") with info:" + any);
+                }
+
+                if (any instanceof AggregatorPollType) {
+                    poll = (AggregatorPollType) any;
+                    if (poll instanceof QueryResourcePropertiesPollType) {
+                        // TODO: support this?
+                        LOG.fine("Found query type");
+                    } else if (poll instanceof GetResourcePropertyPollType) {
+                        // TODO: do get
+                        LOG.fine("Found get type");
+                    } else if (poll instanceof GetMultipleResourcePropertiesPollType) {
+                        // TODO: do multi-get
+                        LOG.fine("Found multi-get type");
+                    } else {
+                        LOG.log(Level.WARNING, "Unsupported polltype:" + poll);
+                    }
+
+                } else {
+                    LOG.log(Level.WARNING, "Unknown aggregator type!:" + any);
+                }
+            }
+
+            if (poll != null) {
+                LOG.fine("Will poll on interval:" + poll.getPollIntervalMillis());
+                // TODO: add the schedule to the timer here, as we have a valid/supported poll type now
+
+            } else {
+                LOG.log(Level.WARNING, "Unable to process AggregatorConfig!");
+                throw new AddRefusedFault("Unable to process AggregatorConfig!");
+            }
+
+        } else {
+            LOG.log(Level.WARNING, "Unsupported registration content:" + content.getClass());
+            throw new AddRefusedFault("Unsupported registration content:" + content.getClass());
+        }
 
         String collectionURI = this.db.getDefaultCollectionURI();
 
@@ -66,12 +167,12 @@ public class IndexServiceImpl implements IndexService {
             element = JAXBUtils.marshalToElement(bigEntry);
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Unable to marshall entry!", e);
+            throw new AddRefusedFault("Unable to marshall entry!", e);
         }
 
         try {
             if (element != null) {
                 this.db.addDocument(collectionURI, entryId, element, false);
-
                 if (LOG.isLoggable(Level.FINEST)) {
                     String document = (String) this.db.getDocument(collectionURI, entryId, true);
                     LOG.finest("Stored doc:" + document);
@@ -79,6 +180,7 @@ public class IndexServiceImpl implements IndexService {
             }
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Unable to save entry to database!", e);
+            throw new AddRefusedFault("Unable to save entry to database!", e);
         }
 
         return entryId;
@@ -190,13 +292,11 @@ public class IndexServiceImpl implements IndexService {
         Iterator<Entry<String, EntryHolder>> iter = entries.entrySet().iterator();
         while (iter.hasNext()) {
             Entry<String, EntryHolder> entry = iter.next();
-            String key=entry.getKey();
+            EntryHolder entryResource = entry.getValue();
             totalSwept++;
             try {
 
-                EntryHolder entryResource = entries.get(key);
                 // ResourceKey entryResourceKey = (ResourceKey) entryResource.getEntryId() getKey();
-
                 Calendar now = new GregorianCalendar();
                 Calendar termination = entryResource.getTerminationTime();
 
@@ -208,14 +308,15 @@ public class IndexServiceImpl implements IndexService {
 
                     // if termination time is in past
                     if (now.after(termination)) {
-                        LOG.fine("Removing entry (" + key + ") with address: "
-                                + entryResource.getEntry().getMemberServiceEPR().getAddress().getValue()
-                                + " as termination time=" + dateFormat.format(termination.getTime())
-                                + " is in the past.");
-                        //entries.remove(key);
+                        LOG.fine("Removing entry (" + entryResource.getEntryId() + ") with address: "
+                                + getURLSafe(entryResource.getEntry()) + " as termination time="
+                                + dateFormat.format(termination.getTime()) + " is in the past.");
                         iter.remove();
+                        // TODO: cancel timer
+                        // TODO: should I store EPRs instead?
+                        removeClient(getURLSafe(entryResource.getEntry()));
                         try {
-                            this.db.removeDocument(this.db.getDefaultCollectionURI(), key);
+                            this.db.removeDocument(this.db.getDefaultCollectionURI(), entryResource.getEntryId());
                         } catch (Exception e) {
                             LOG.warning("Error while removing document from database:" + e);
                         }
@@ -244,6 +345,15 @@ public class IndexServiceImpl implements IndexService {
             } catch (Exception e) {
                 LOG.log(Level.FINEST, "Problem listing document ids", e);
             }
+        }
+    }
+
+    private String getURLSafe(EntryType entry) {
+        if (entry != null && entry.getMemberServiceEPR() != null && entry.getMemberServiceEPR().getAddress() != null
+                && entry.getMemberServiceEPR().getAddress().getValue() != null) {
+            return entry.getMemberServiceEPR().getAddress().getValue().trim();
+        } else {
+            return null;
         }
     }
 

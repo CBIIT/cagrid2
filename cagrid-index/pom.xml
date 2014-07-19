@@ -26,6 +26,11 @@
                 <artifactId>cagrid-index-wsrf</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>cagrid-index-soap-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>${project.groupId}</groupId>
@@ -97,7 +102,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -114,6 +119,6 @@
         <module>cagrid-index-service</module>
         <module>cagrid-index-wsrf</module>
         <module>cagrid-index-systest</module>
-        <!-- <module>cagrid-index-soap-client</module> <module>cagrid-index-service-tools</module> -->
+        <module>cagrid-index-soap-client</module> <!-- <module>cagrid-index-service-tools</module> -->
     </modules>
 </project>

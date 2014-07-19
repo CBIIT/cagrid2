@@ -67,6 +67,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>cagrid-index-soap-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>cagrid-core</artifactId>
         </dependency>
         <dependency>

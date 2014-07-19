@@ -25,7 +25,13 @@ import org.cagrid.index.metrics.types.Accumulator;
 @XmlRegistry
 public class ObjectFactory {
 
+    private final static QName _AggregatorPollType_QNAME = new QName("http://mds.globus.org/aggregator/types", "AggregatorPollType");
     private final static QName _RegistrationCount_QNAME = new QName("http://mds.globus.org/aggregator/types", "RegistrationCount");
+    private final static QName _GetMultipleResourcePropertiesPollType_QNAME = new QName("http://mds.globus.org/aggregator/types", "GetMultipleResourcePropertiesPollType");
+    private final static QName _GetResourcePropertyPollType_QNAME = new QName("http://mds.globus.org/aggregator/types", "GetResourcePropertyPollType");
+    private final static QName _ExecutionPollType_QNAME = new QName("http://mds.globus.org/aggregator/types", "ExecutionPollType");
+    private final static QName _QueryResourcePropertiesPollType_QNAME = new QName("http://mds.globus.org/aggregator/types", "QueryResourcePropertiesPollType");
+    private final static QName _AggregatorSubscriptionType_QNAME = new QName("http://mds.globus.org/aggregator/types", "AggregatorSubscriptionType");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: org.cagrid.index.aggregator.types
@@ -35,51 +41,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AggregatorServiceGroupRP }
-     * 
-     */
-    public AggregatorServiceGroupRP createAggregatorServiceGroupRP() {
-        return new AggregatorServiceGroupRP();
-    }
-
-    /**
      * Create an instance of {@link ExecutionPollType }
      * 
      */
     public ExecutionPollType createExecutionPollType() {
         return new ExecutionPollType();
-    }
-
-    /**
-     * Create an instance of {@link PairedKeyType }
-     * 
-     */
-    public PairedKeyType createPairedKeyType() {
-        return new PairedKeyType();
-    }
-
-    /**
-     * Create an instance of {@link AggregatorData }
-     * 
-     */
-    public AggregatorData createAggregatorData() {
-        return new AggregatorData();
-    }
-
-    /**
-     * Create an instance of {@link AggregatorConfig }
-     * 
-     */
-    public AggregatorConfig createAggregatorConfig() {
-        return new AggregatorConfig();
-    }
-
-    /**
-     * Create an instance of {@link AggregatorContent }
-     * 
-     */
-    public AggregatorContent createAggregatorContent() {
-        return new AggregatorContent();
     }
 
     /**
@@ -123,11 +89,60 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link AggregatorServiceGroupRP }
+     * 
+     */
+    public AggregatorServiceGroupRP createAggregatorServiceGroupRP() {
+        return new AggregatorServiceGroupRP();
+    }
+
+    /**
+     * Create an instance of {@link PairedKeyType }
+     * 
+     */
+    public PairedKeyType createPairedKeyType() {
+        return new PairedKeyType();
+    }
+
+    /**
+     * Create an instance of {@link AggregatorData }
+     * 
+     */
+    public AggregatorData createAggregatorData() {
+        return new AggregatorData();
+    }
+
+    /**
+     * Create an instance of {@link AggregatorConfig }
+     * 
+     */
+    public AggregatorConfig createAggregatorConfig() {
+        return new AggregatorConfig();
+    }
+
+    /**
+     * Create an instance of {@link AggregatorContent }
+     * 
+     */
+    public AggregatorContent createAggregatorContent() {
+        return new AggregatorContent();
+    }
+
+    /**
      * Create an instance of {@link AggregatorError }
      * 
      */
     public AggregatorError createAggregatorError() {
         return new AggregatorError();
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AggregatorPollType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "AggregatorPollType")
+    public JAXBElement<AggregatorPollType> createAggregatorPollType(AggregatorPollType value) {
+        return new JAXBElement<AggregatorPollType>(_AggregatorPollType_QNAME, AggregatorPollType.class, null, value);
     }
 
     /**
@@ -137,6 +152,51 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "RegistrationCount")
     public JAXBElement<Accumulator> createRegistrationCount(Accumulator value) {
         return new JAXBElement<Accumulator>(_RegistrationCount_QNAME, Accumulator.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetMultipleResourcePropertiesPollType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "GetMultipleResourcePropertiesPollType")
+    public JAXBElement<GetMultipleResourcePropertiesPollType> createGetMultipleResourcePropertiesPollType(GetMultipleResourcePropertiesPollType value) {
+        return new JAXBElement<GetMultipleResourcePropertiesPollType>(_GetMultipleResourcePropertiesPollType_QNAME, GetMultipleResourcePropertiesPollType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link GetResourcePropertyPollType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "GetResourcePropertyPollType")
+    public JAXBElement<GetResourcePropertyPollType> createGetResourcePropertyPollType(GetResourcePropertyPollType value) {
+        return new JAXBElement<GetResourcePropertyPollType>(_GetResourcePropertyPollType_QNAME, GetResourcePropertyPollType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExecutionPollType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "ExecutionPollType")
+    public JAXBElement<ExecutionPollType> createExecutionPollType(ExecutionPollType value) {
+        return new JAXBElement<ExecutionPollType>(_ExecutionPollType_QNAME, ExecutionPollType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link QueryResourcePropertiesPollType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "QueryResourcePropertiesPollType")
+    public JAXBElement<QueryResourcePropertiesPollType> createQueryResourcePropertiesPollType(QueryResourcePropertiesPollType value) {
+        return new JAXBElement<QueryResourcePropertiesPollType>(_QueryResourcePropertiesPollType_QNAME, QueryResourcePropertiesPollType.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link AggregatorSubscriptionType }{@code >}}
+     * 
+     */
+    @XmlElementDecl(namespace = "http://mds.globus.org/aggregator/types", name = "AggregatorSubscriptionType")
+    public JAXBElement<AggregatorSubscriptionType> createAggregatorSubscriptionType(AggregatorSubscriptionType value) {
+        return new JAXBElement<AggregatorSubscriptionType>(_AggregatorSubscriptionType_QNAME, AggregatorSubscriptionType.class, null, value);
     }
 
 }
