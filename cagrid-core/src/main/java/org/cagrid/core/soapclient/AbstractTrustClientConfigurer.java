@@ -27,7 +27,6 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
     private String keyPassword;
     private X509Credential credential;
 
-
     public String getKeystoreFile() {
         return keystoreFile;
     }
@@ -78,7 +77,6 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
 
     public abstract void configureTrustForClient(AbstractSoapClient client);
 
-
     public X509Credential getCredential() {
 
         if (credential == null) {
@@ -87,12 +85,13 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
                 log.debug("Loading X509 credential.....");
             }
 
-            if (getKeystoreFile() != null) {
+            if (getKeystoreFile() != null && !getKeystoreFile().trim().equals("")) {
                 try {
                     if (log.isDebugEnabled()) {
                         log.debug("Loading credential from the keystore " + getKeystoreFile() + ".");
                     }
-                    KeyStore keystore = KeyStoreUtil.getKeyStore(getKeystoreFile(), getKeystorePassword().toCharArray());
+                    KeyStore keystore = KeyStoreUtil
+                            .getKeyStore(getKeystoreFile(), getKeystorePassword().toCharArray());
                     String alias = getKeyAlias();
                     if (alias == null) {
                         Enumeration<String> aliases = keystore.aliases();
@@ -111,7 +110,8 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
                     Key key = keystore.getKey(alias, getKeyPassword().toCharArray());
                     Certificate[] certAry = keystore.getCertificateChain(alias);
                     if (certAry == null) {
-                        throw new GeneralSecurityException("A credential with the alias " + alias + " could not be found in the keystore " + getKeystoreFile() + ".");
+                        throw new GeneralSecurityException("A credential with the alias " + alias
+                                + " could not be found in the keystore " + getKeystoreFile() + ".");
                     }
                     X509Certificate[] chain = new X509Certificate[certAry.length];
                     for (int i = 0; i < certAry.length; i++) {
@@ -128,7 +128,7 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
                     log.error("GeneralSecurityException while getting credential", e);
                 }
             } else {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug("No keystore file provided to load the credential from.");
                 }
             }
@@ -137,6 +137,4 @@ public abstract class AbstractTrustClientConfigurer implements ClientConfigurer 
         return this.credential;
     }
 
-
 }
-
