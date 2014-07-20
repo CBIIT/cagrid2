@@ -66,17 +66,22 @@ public class IndexServiceImpl implements IndexService {
 
     private ResourcePropertyAccessClient getClient(String url) throws Exception {
         try {
+            LOG.log(Level.FINEST, "Acquiring client lock, with " + this.clientCache.size() + " entries in cache.");
             this.clientCacheLock.lock();
 
             if (this.clientCache.containsKey(url)) {
+                LOG.log(Level.FINEST, "Found client in cache for:" + url);
                 return this.clientCache.get(url);
             } else {
+                LOG.log(Level.FINEST, "Didn't find client in cache for:" + url);
                 ResourcePropertyAccessClient client = new ResourcePropertyAccessClient(url);
                 configurer.configureClient(client);
                 this.clientCache.put(url, client);
+                LOG.log(Level.FINEST, "Stored client in cache for:" + url);
                 return client;
             }
         } finally {
+            LOG.log(Level.FINEST, "Releasing client lock.");
             this.clientCacheLock.unlock();
         }
     }
@@ -457,42 +462,42 @@ public class IndexServiceImpl implements IndexService {
                         LOG.finest("Got results:" + Arrays.toString(result.toArray()));
                     }
 
-                    // Object val = null;
-                    // if (result.size() == 1) {
-                    // if (result.get(0) instanceof JAXBElement) {
-                    // val = ((JAXBElement) result.get(0)).getValue();
-                    // LOG.fine("Found a JAXBElement, extracted value (" + result.get(0).getClass()
-                    // + ") with info:" + val);
-                    // } else if (result.get(0) instanceof Element) {
-                    // val = result.get(0);
-                    // LOG.fine("Found an Element with info:" + val);
-                    // }
-                    // } else {
-                    // // TODO:handle multiple results; do I create an element and append?
-                    // LOG.fine("Unable to support multiple values.");
-                    // }
-                    //
-                    // if (val != null) {
-
-                    Object content = this.entry.getEntry().getContent();
-                    if (content instanceof AggregatorContent) {
-                        synchronized (this) {
-                            AggregatorContent agg = (AggregatorContent) content;
-                            AggregatorData value = agg.getAggregatorData();
-                            value.getAny().clear();
-                            value.getAny().add(result);
-                            agg.setAggregatorData(value);
-                            updateDatabaseEntry(entry.getEntry(), entry.getEntryId());
-                            // clear the in-memory version once we've stored it in the database
-                            value.getAny().clear();
+                    Object val = null;
+                    if (result.size() == 1) {
+                        if (result.get(0) instanceof JAXBElement) {
+                            val = ((JAXBElement) result.get(0)).getValue();
+                            LOG.fine("Found a JAXBElement, extracted value (" + result.get(0).getClass()
+                                    + ") with info:" + val);
+                        } else if (result.get(0) instanceof Element) {
+                            val = result.get(0);
+                            LOG.fine("Found an Element with info:" + val);
                         }
                     } else {
-                        LOG.fine("Unexpected content type, unable to update!");
+                        // TODO:handle multiple results; do I create an element and append?
+                        LOG.fine("Unable to support multiple values.");
                     }
 
-                    // } else {
-                    // LOG.fine("Unable to extract value, skipping setting of content.");
-                    // }
+                    if (val != null) {
+
+                        Object content = this.entry.getEntry().getContent();
+                        if (content instanceof AggregatorContent) {
+                            synchronized (this) {
+                                AggregatorContent agg = (AggregatorContent) content;
+                                AggregatorData value = agg.getAggregatorData();
+                                value.getAny().clear();
+                                value.getAny().add(val);
+                                agg.setAggregatorData(value);
+                                updateDatabaseEntry(entry.getEntry(), entry.getEntryId());
+                                // clear the in-memory version once we've stored it in the database
+                                value.getAny().clear();
+                            }
+                        } else {
+                            LOG.fine("Unexpected content type, unable to update!");
+                        }
+
+                    } else {
+                        LOG.fine("Unable to extract value, skipping setting of content.");
+                    }
                 } else {
                     LOG.log(Level.WARNING, "Got no results for polltype:" + poll);
                 }
