@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -23,6 +24,7 @@ import org.cagrid.core.common.JAXBUtils;
 import org.cagrid.core.soapclient.ClientConfigurer;
 import org.cagrid.index.aggregator.types.AggregatorConfig;
 import org.cagrid.index.aggregator.types.AggregatorContent;
+import org.cagrid.index.aggregator.types.AggregatorData;
 import org.cagrid.index.aggregator.types.AggregatorPollType;
 import org.cagrid.index.aggregator.types.GetMultipleResourcePropertiesPollType;
 import org.cagrid.index.aggregator.types.GetResourcePropertyPollType;
@@ -33,6 +35,10 @@ import org.cagrid.index.service.impl.database.xml.xindice.XindiceIndexDatabase;
 import org.cagrid.index.types.BigIndexContent;
 import org.cagrid.index.types.BigIndexEntry;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourcelifetime_1_2_draft_01_wsdl.ResourceUnknownFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.InvalidQueryExpressionFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.InvalidResourcePropertyQNameFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.QueryEvaluationErrorFault;
+import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.UnknownQueryExpressionDialectFault;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01_wsdl.AddRefusedFault;
 import org.w3c.dom.Element;
@@ -89,8 +95,13 @@ public class IndexServiceImpl implements IndexService {
     }
 
     public void shutdown() {
+        LOG.info("Shutdown called.");
         if (this.queryTimer != null) {
+            LOG.info("Attempting to cancelling timer.");
             this.queryTimer.cancel();
+            LOG.info("Timer cancelled.");
+        } else {
+            LOG.info("Timer was null.");
         }
     }
 
@@ -126,26 +137,26 @@ public class IndexServiceImpl implements IndexService {
                 if (any instanceof AggregatorPollType) {
                     poll = (AggregatorPollType) any;
                     if (poll instanceof QueryResourcePropertiesPollType) {
-                        // TODO: support this?
                         LOG.fine("Found query type");
                     } else if (poll instanceof GetResourcePropertyPollType) {
-                        // TODO: do get
                         LOG.fine("Found get type");
                     } else if (poll instanceof GetMultipleResourcePropertiesPollType) {
-                        // TODO: do multi-get
                         LOG.fine("Found multi-get type");
                     } else {
                         LOG.log(Level.WARNING, "Unsupported polltype:" + poll);
                     }
-
                 } else {
                     LOG.log(Level.WARNING, "Unknown aggregator type!:" + any);
                 }
             }
 
             if (poll != null) {
-                LOG.fine("Will poll on interval:" + poll.getPollIntervalMillis());
-                // TODO: add the schedule to the timer here, as we have a valid/supported poll type now
+                int intervalMS = poll.getPollIntervalMillis();
+                LOG.fine("Will poll on interval:" + intervalMS + " ms.");
+                // add the schedule to the timer here, as we have a valid/supported poll type now
+                PollTimerTask pollTask = new PollTimerTask(poll, holder);
+                holder.setTask(pollTask);
+                this.queryTimer.schedule(pollTask, 0, intervalMS);
 
             } else {
                 LOG.log(Level.WARNING, "Unable to process AggregatorConfig!");
@@ -157,11 +168,16 @@ public class IndexServiceImpl implements IndexService {
             throw new AddRefusedFault("Unsupported registration content:" + content.getClass());
         }
 
+        updateDatabaseEntry(entry, entryId);
+
+        return entryId;
+    }
+
+    private void updateDatabaseEntry(EntryType entry, String entryId) throws AddRefusedFault {
         String collectionURI = this.db.getDefaultCollectionURI();
 
         BigIndexEntry bigEntry = new BigIndexEntry();
         bigEntry.setEntry(entry);
-        // String document = ObjectSerializer.toString(bigEntry, bigEntry.getTypeDesc().getXmlType());
         Element element = null;
         try {
             element = JAXBUtils.marshalToElement(bigEntry);
@@ -177,13 +193,13 @@ public class IndexServiceImpl implements IndexService {
                     String document = (String) this.db.getDocument(collectionURI, entryId, true);
                     LOG.finest("Stored doc:" + document);
                 }
+            } else {
+                LOG.log(Level.WARNING, "Can't save a null element to the database!");
             }
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Unable to save entry to database!", e);
             throw new AddRefusedFault("Unable to save entry to database!", e);
         }
-
-        return entryId;
     }
 
     public Calendar getEntryTerminationTime(String entryID) throws ResourceUnknownFault {
@@ -311,9 +327,11 @@ public class IndexServiceImpl implements IndexService {
                         LOG.fine("Removing entry (" + entryResource.getEntryId() + ") with address: "
                                 + getURLSafe(entryResource.getEntry()) + " as termination time="
                                 + dateFormat.format(termination.getTime()) + " is in the past.");
+                        // this will remove the entry from the map
                         iter.remove();
-                        // TODO: cancel timer
-                        // TODO: should I store EPRs instead?
+                        // cancel its query job
+                        entryResource.getTask().cancel();
+                        // remove the cached client; should I store EPRs instead?
                         removeClient(getURLSafe(entryResource.getEntry()));
                         try {
                             this.db.removeDocument(this.db.getDefaultCollectionURI(), entryResource.getEntryId());
@@ -367,5 +385,121 @@ public class IndexServiceImpl implements IndexService {
 
         // TODO: fix this awful use of "throw new Exception() in globus code"
         return db.query(queryStr, null);
+    }
+
+    class PollTimerTask extends TimerTask {
+
+        private EntryHolder entry;
+        private AggregatorPollType poll;
+
+        public PollTimerTask(AggregatorPollType poll, EntryHolder entry) {
+            this.poll = poll;
+            this.entry = entry;
+        }
+
+        @Override
+        public void run() {
+
+            try {
+                String memberURL = getURLSafe(entry.getEntry());
+                ResourcePropertyAccessClient client = null;
+                try {
+                    client = getClient(memberURL);
+                } catch (Exception e) {
+                    LOG.log(Level.WARNING, "Problem getting client for entry:" + entry, e);
+                    return;
+                }
+                List<Object> result = null;
+                if (poll instanceof QueryResourcePropertiesPollType) {
+                    QueryResourcePropertiesPollType queryType = (QueryResourcePropertiesPollType) poll;
+                    LOG.fine("Executing query type [" + queryType.getQueryExpression() + "] for entry:" + memberURL);
+                    try {
+                        result = client.queryResourceProperties(queryType.getQueryExpression());
+                    } catch (UnknownQueryExpressionDialectFault e) {
+                        LOG.log(Level.WARNING, "Problem with query dialect:"
+                                + queryType.getQueryExpression().getDialect(), e);
+                    } catch (InvalidQueryExpressionFault e) {
+                        LOG.log(Level.WARNING, "Problem executing query.", e);
+                    } catch (QueryEvaluationErrorFault e) {
+                        LOG.log(Level.WARNING, "Problem executing query.", e);
+                    } catch (org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.ResourceUnknownFault e) {
+                        LOG.log(Level.WARNING, "Problem executing query.", e);
+                    } catch (InvalidResourcePropertyQNameFault e) {
+                        LOG.log(Level.WARNING, "Problem executing query.", e);
+                    }
+                } else if (poll instanceof GetResourcePropertyPollType) {
+                    GetResourcePropertyPollType getType = (GetResourcePropertyPollType) poll;
+                    LOG.fine("Executing get type [" + getType.getResourcePropertyName() + "] for entry:" + memberURL);
+                    try {
+                        result = client.getResourceProperty(getType.getResourcePropertyName());
+                    } catch (org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.ResourceUnknownFault e) {
+                        LOG.log(Level.WARNING, "Problem executing get.", e);
+                    } catch (InvalidResourcePropertyQNameFault e) {
+                        LOG.log(Level.WARNING, "Problem executing get.", e);
+                    }
+
+                } else if (poll instanceof GetMultipleResourcePropertiesPollType) {
+                    GetMultipleResourcePropertiesPollType getType = (GetMultipleResourcePropertiesPollType) poll;
+                    LOG.fine("Executing multi-get type for entry:" + memberURL);
+                    try {
+                        result = client.getMultipleResourceProperties(getType.getResourcePropertyNames());
+                    } catch (org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01_wsdl.ResourceUnknownFault e) {
+                        LOG.log(Level.WARNING, "Problem executing get.", e);
+                    } catch (InvalidResourcePropertyQNameFault e) {
+                        LOG.log(Level.WARNING, "Problem executing get.", e);
+                    }
+                } else {
+                    LOG.log(Level.WARNING, "Unsupported polltype:" + poll);
+                }
+
+                if (result != null) {
+                    if (LOG.isLoggable(Level.FINEST)) {
+                        LOG.finest("Got results:" + Arrays.toString(result.toArray()));
+                    }
+
+                    // Object val = null;
+                    // if (result.size() == 1) {
+                    // if (result.get(0) instanceof JAXBElement) {
+                    // val = ((JAXBElement) result.get(0)).getValue();
+                    // LOG.fine("Found a JAXBElement, extracted value (" + result.get(0).getClass()
+                    // + ") with info:" + val);
+                    // } else if (result.get(0) instanceof Element) {
+                    // val = result.get(0);
+                    // LOG.fine("Found an Element with info:" + val);
+                    // }
+                    // } else {
+                    // // TODO:handle multiple results; do I create an element and append?
+                    // LOG.fine("Unable to support multiple values.");
+                    // }
+                    //
+                    // if (val != null) {
+
+                    Object content = this.entry.getEntry().getContent();
+                    if (content instanceof AggregatorContent) {
+                        synchronized (this) {
+                            AggregatorContent agg = (AggregatorContent) content;
+                            AggregatorData value = agg.getAggregatorData();
+                            value.getAny().clear();
+                            value.getAny().add(result);
+                            agg.setAggregatorData(value);
+                            updateDatabaseEntry(entry.getEntry(), entry.getEntryId());
+                            // clear the in-memory version once we've stored it in the database
+                            value.getAny().clear();
+                        }
+                    } else {
+                        LOG.fine("Unexpected content type, unable to update!");
+                    }
+
+                    // } else {
+                    // LOG.fine("Unable to extract value, skipping setting of content.");
+                    // }
+                } else {
+                    LOG.log(Level.WARNING, "Got no results for polltype:" + poll);
+                }
+
+            } catch (Exception e) {
+                LOG.log(Level.WARNING, "Unhandled exception in  poll task:" + poll, e);
+            }
+        }
     }
 }

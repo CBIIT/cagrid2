@@ -10,11 +10,10 @@
     <osgix:cm-properties id="preProps" persistent-id="cagrid.index.service">
         <prop key="cagrid.index.service.sweeper.start.delay">10000</prop> <!-- wait 10 seconds before trying to sweep -->
         <prop key="cagrid.index.service.sweeper.repeat.interval">300000</prop> <!-- remove old entries once every 5 mins -->
-        <!-- TODO: test that these work as null, as index won't have credentials -->
-        <prop key="cagrid.index.service.client.keystorefile"></prop>
-        <prop key="cagrid.index.service.client.keystorepassword"></prop>
-        <prop key="cagrid.index.service.client.keyalias"></prop>
-        <prop key="cagrid.index.service.client.keypassword"></prop>
+        <prop key="cagrid.index.service.client.keystorefile"/>
+        <prop key="cagrid.index.service.client.keystorepassword"/>
+        <prop key="cagrid.index.service.client.keyalias"/>
+        <prop key="cagrid.index.service.client.keypassword"/>
         <prop key="cagrid.index.service.client.truststoreLocation"></prop>
         <prop key="cagrid.index.service.client.truststorePassword"></prop>
         <prop key="cagrid.index.service.client.configurer">truststoreClientConfigurer</prop>
