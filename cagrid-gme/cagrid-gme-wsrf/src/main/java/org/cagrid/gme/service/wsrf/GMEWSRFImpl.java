@@ -149,7 +149,6 @@ public class GMEWSRFImpl implements GlobalModelExchangePortType {
     public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(GetMultipleResourceProperties getMultipleResourcePropertiesRequest) throws ResourceUnknownFault, InvalidResourcePropertyQNameFault    {
     	LOG.info("getMultipleResourceProperty "
 				+ getMultipleResourcePropertiesRequest);
-		System.out.println(getMultipleResourcePropertiesRequest);
 		GetMultipleResourcePropertiesResponse response = new GetMultipleResourcePropertiesResponse();
 		for (Iterator iterator = getMultipleResourcePropertiesRequest
 				.getResourceProperty().iterator(); iterator.hasNext();) {
