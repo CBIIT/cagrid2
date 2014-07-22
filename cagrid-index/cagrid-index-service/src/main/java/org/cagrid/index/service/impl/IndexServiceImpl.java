@@ -10,9 +10,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.UUID;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -49,7 +51,8 @@ public class IndexServiceImpl implements IndexService {
 
     private Map<String, EntryHolder> entries = new HashMap<String, EntryHolder>();
     private XindiceIndexDatabase db;
-    private Timer queryTimer;
+    private ScheduledExecutorService executorService;
+    private int poolSize = 10;
     private Map<String, ResourcePropertyAccessClient> clientCache;
     private Lock clientCacheLock = new ReentrantLock();
 
@@ -59,7 +62,7 @@ public class IndexServiceImpl implements IndexService {
         LOG.info("Starting up IndexService");
         // initialize database
         initializeDatabase();
-        this.queryTimer = new Timer(true);
+        this.executorService = Executors.newScheduledThreadPool(poolSize);
         this.clientCache = new HashMap<String, ResourcePropertyAccessClient>();
         this.configurer = configurer;
     }
@@ -101,12 +104,12 @@ public class IndexServiceImpl implements IndexService {
 
     public void shutdown() {
         LOG.info("Shutdown called.");
-        if (this.queryTimer != null) {
-            LOG.info("Attempting to cancelling timer.");
-            this.queryTimer.cancel();
-            LOG.info("Timer cancelled.");
+        if (this.executorService != null) {
+            LOG.info("Attempting to cancel executor tasks.");
+            List<Runnable> runners = this.executorService.shutdownNow();
+            LOG.info("Executor cancelled with " + runners.size() + " pending tasks.");
         } else {
-            LOG.info("Timer was null.");
+            LOG.info("Executor was null.");
         }
     }
 
@@ -158,10 +161,11 @@ public class IndexServiceImpl implements IndexService {
             if (poll != null) {
                 int intervalMS = poll.getPollIntervalMillis();
                 LOG.fine("Will poll on interval:" + intervalMS + " ms.");
-                // add the schedule to the timer here, as we have a valid/supported poll type now
-                PollTimerTask pollTask = new PollTimerTask(poll, holder);
-                holder.setTask(pollTask);
-                this.queryTimer.schedule(pollTask, 0, intervalMS);
+                // add the schedule to the executor here, as we have a valid/supported poll type now
+                AggregatorPollTask pollTask = new AggregatorPollTask(poll, holder);
+                ScheduledFuture<?> future = this.executorService.scheduleWithFixedDelay(pollTask, 5000, intervalMS,
+                        TimeUnit.MILLISECONDS);
+                holder.setScheduledFuture(future);
 
             } else {
                 LOG.log(Level.WARNING, "Unable to process AggregatorConfig!");
@@ -335,7 +339,7 @@ public class IndexServiceImpl implements IndexService {
                         // this will remove the entry from the map
                         iter.remove();
                         // cancel its query job
-                        entryResource.getTask().cancel();
+                        entryResource.getScheduledFuture().cancel(true);
                         // remove the cached client; should I store EPRs instead?
                         removeClient(getURLSafe(entryResource.getEntry()));
                         try {
@@ -392,12 +396,12 @@ public class IndexServiceImpl implements IndexService {
         return db.query(queryStr, null);
     }
 
-    class PollTimerTask extends TimerTask {
+    class AggregatorPollTask implements Runnable {
 
         private EntryHolder entry;
         private AggregatorPollType poll;
 
-        public PollTimerTask(AggregatorPollType poll, EntryHolder entry) {
+        public AggregatorPollTask(AggregatorPollType poll, EntryHolder entry) {
             this.poll = poll;
             this.entry = entry;
         }

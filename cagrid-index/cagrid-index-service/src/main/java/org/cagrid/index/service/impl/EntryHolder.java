@@ -1,7 +1,7 @@
 package org.cagrid.index.service.impl;
 
 import java.util.Calendar;
-import java.util.TimerTask;
+import java.util.concurrent.ScheduledFuture;
 
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_servicegroup_1_2_draft_01.EntryType;
 
@@ -9,7 +9,7 @@ public class EntryHolder {
     private String entryId;
     private EntryType entry;
     private Calendar termTime;
-    private TimerTask task;
+    private ScheduledFuture<?> future;
 
     public String getEntryId() {
         return entryId;
@@ -40,11 +40,11 @@ public class EntryHolder {
         return "EntryHolder [entryId=" + entryId + ", entry=" + entry + ", termTime=" + termTime + "]";
     }
 
-    public TimerTask getTask() {
-        return task;
+    public ScheduledFuture<?> getScheduledFuture() {
+        return future;
     }
 
-    public void setTask(TimerTask task) {
-        this.task = task;
+    public void setScheduledFuture(ScheduledFuture<?> future) {
+        this.future = future;
     }
 }
