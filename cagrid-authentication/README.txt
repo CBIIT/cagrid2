@@ -1,0 +1,1 @@
+need to add com.sun.net.ssl.internal.ssl to jre.properties

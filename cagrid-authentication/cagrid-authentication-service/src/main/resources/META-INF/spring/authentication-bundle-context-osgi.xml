@@ -9,15 +9,14 @@
                         http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
 	<osgix:cm-properties id="preProps" persistent-id="cagrid.authentication.service">
-        <prop key="cagrid.gme.service.db.url">jdbc:mysql://localhost:3306/gme</prop>
-		<prop key="cagrid.gme.service.db.username">root</prop>
-		<prop key="cagrid.gme.service.db.password"></prop>
-        <prop key="cagrid.gme.service.db.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
-        <prop key="cagrid.gme.service.db.driver">com.mysql.jdbc.Driver</prop>
-        <prop key="cagrid.gme.service.db.hibernate.hbm2ddl.auto">update</prop>
+        <prop key="gaards.authentication.csm.truststore"></prop>
+		<prop key="gaards.authentication.csm.app.context"></prop>
+		<prop key="gaards.authentication.saml.cert"></prop>
+        <prop key="gaards.authentication.saml.key"></prop>
+        <prop key="gaards.authentication.saml.key.password"></prop>
 
 	<prop key="cagrid.authentication.service.metadata.url">file://${karaf.base}/etc/cagrid-authentication/serviceMetadata.xml</prop>
-        <prop key="cagrid.gme.service.security.metadata.url">file://${karaf.base}/etc/cagrid-authentication/serviceSecurityMetadata.xml</prop>
+        <prop key="cagrid.authentication.service.security.metadata.url">file://${karaf.base}/etc/cagrid-authentication/serviceSecurityMetadata.xml</prop>
 	</osgix:cm-properties>
 
 	<ctx:property-placeholder properties-ref="preProps" />
