@@ -1,137 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:util="http://www.springframework.org/schema/util" xmlns:cxf="http://cxf.apache.org/core"
-	xmlns:wsa="http://cxf.apache.org/ws/addressing" xmlns:jaxws="http://cxf.apache.org/jaxws"
-	xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:http="http://cxf.apache.org/transports/http/configuration"
-	xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:util="http://www.springframework.org/schema/util" xmlns:cxf="http://cxf.apache.org/core" xmlns:wsa="http://cxf.apache.org/ws/addressing"
+    xmlns:jaxws="http://cxf.apache.org/jaxws" xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:http="http://cxf.apache.org/transports/http/configuration" xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
                         http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
 	                    http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
 	                    http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
 	                    http://cxf.apache.org/transports/http-jetty/configuration http://cxf.apache.org/schemas/configuration/http-jetty.xsd
-                        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+                        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
+>
 
-	<bean id="defaultPropertiesPlaceholder"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location"
-			value="classpath:META-INF/spring/gridgrouper-wsrf.properties" />
-		<property name="ignoreResourceNotFound" value="true" />
-		<property name="ignoreUnresolvablePlaceholders" value="true" />
-	</bean>
+    <bean id="defaultPropertiesPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:META-INF/spring/cagrid-authentication-wsrf.properties"/>
+        <property name="ignoreResourceNotFound" value="true"/>
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
 
-	<import resource="classpath:META-INF/cxf/cxf.xml" />
-	
-	<httpj:engine-factory bus="cxf">
-		<httpj:engine port="${cagrid.gridgrouper.wsrf.port}">
-			<httpj:tlsServerParameters />
-			<httpj:connector>
-				<bean class="org.eclipse.jetty.server.ssl.SslSocketConnector">
-					<constructor-arg index="0" ref="${cagrid.gridgrouper.wsrf.ssl.context.factory.bean}" />
-					<property name="port" value="${cagrid.gridgrouper.wsrf.port}" />
-				</bean>
-			</httpj:connector>
-		</httpj:engine>
+    <import resource="classpath:META-INF/cxf/cxf.xml"/>
 
-        <httpj:engine port="${cagrid.gridgrouper.legacy-wsrf.port}">
-            <httpj:tlsServerParameters />
+    <httpj:engine-factory bus="cxf">
+        <httpj:engine port="${cagrid.authentication.wsrf.port}">
+            <httpj:tlsServerParameters/>
             <httpj:connector>
                 <bean class="org.eclipse.jetty.server.ssl.SslSocketConnector">
-                    <constructor-arg index="0" ref="${cagrid.gridgrouper.legacy-wsrf.ssl.context.factory.bean}" />
-                    <property name="port" value="${cagrid.gridgrouper.legacy-wsrf.port}" />
+                    <constructor-arg index="0" ref="${cagrid.authentication.wsrf.ssl.context.factory.bean}"/>
+                    <property name="port" value="${cagrid.authentication.wsrf.port}"/>
                 </bean>
             </httpj:connector>
         </httpj:engine>
-	</httpj:engine-factory>
-	
-	<bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
-		<property name="marshallerProperties" ref="propertiesMap" />
-	</bean>
-	<util:map id="propertiesMap">
-		<entry key="jaxb.formatted.output">
-			<value type="java.lang.Boolean">true</value>
-		</entry>
-	</util:map>
 
-	<bean id="gridgrouperWSRF" class="org.cagrid.gridgrouper.service.wsrf.GridGrouperWSRFImpl">
-		<constructor-arg ref="gridGrouperService" />
-	</bean>
+        <httpj:engine port="${cagrid.authentication.legacy-wsrf.port}">
+            <httpj:tlsServerParameters/>
+            <httpj:connector>
+                <bean class="org.eclipse.jetty.server.ssl.SslSocketConnector">
+                    <constructor-arg index="0" ref="${cagrid.authentication.legacy-wsrf.ssl.context.factory.bean}"/>
+                    <property name="port" value="${cagrid.authentication.legacy-wsrf.port}"/>
+                </bean>
+            </httpj:connector>
+        </httpj:engine>
+    </httpj:engine-factory>
 
-	<bean id="registrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
-		<constructor-arg index="0" value="${cagrid.gridgrouper.wsrf.registration.on}"></constructor-arg>
-		<constructor-arg index="1" value="${cagrid.gridgrouper.wsrf.registration.xml}"></constructor-arg>
-		<constructor-arg index="2" value="${cagrid.gridgrouper.wsrf.registration.registrant.url}"></constructor-arg>
-		<constructor-arg index="3" value="${cagrid.gridgrouper.wsrf.registration.index.url}"></constructor-arg>
-	</bean>
+    <bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+        <property name="marshallerProperties" ref="propertiesMap"/>
+    </bean>
+    <util:map id="propertiesMap">
+        <entry key="jaxb.formatted.output">
+            <value type="java.lang.Boolean">true</value>
+        </entry>
+    </util:map>
+
+    <bean id="jaxbResourceProperties" class="java.util.HashMap">
+        <constructor-arg>
+            <map>
+                <entry key="serviceMetadata" value="${cagrid.authentication.wsrf.metadata.url}"/>
+                <entry key="serviceSecurityMetadata" value="${cagrid.authentication.wsrf.security.metadata.url}"/>
+            </map>
+        </constructor-arg>
+    </bean>
+
+
+    <bean id="authenticationWSRF" class="org.cagrid.authentication.service.wsrf.AuthenticationServiceWSRFImpl">
+        <constructor-arg ref="authenticationService"/>
+        <constructor-arg ref="jaxbResourceProperties" />
+    </bean>
+
+    <bean id="registrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
+        <constructor-arg index="0" value="${cagrid.authentication.wsrf.registration.on}"></constructor-arg>
+        <constructor-arg index="1" value="${cagrid.authentication.wsrf.registration.xml}"></constructor-arg>
+        <constructor-arg index="2" value="${cagrid.authentication.wsrf.registration.registrant.url}"></constructor-arg>
+        <constructor-arg index="3" value="${cagrid.authentication.wsrf.registration.index.url}"></constructor-arg>
+    </bean>
 
     <bean id="trustServiceSSLContextFactory" class="org.cagrid.trust.service.TrustServiceJettySSLContextFactory ">
         <property name="trustService" ref="trustService"/>
-        <property name="keyStorePath" value="${cagrid.gridgrouper.wsrf.keystore.path}"/>
-        <property name="keyStorePassword" value="${cagrid.gridgrouper.wsrf.keystore.password}"/>
-        <property name="keyManagerPassword" value="${cagrid.gridgrouper.wsrf.key.password}"/>
+        <property name="keyStorePath" value="${cagrid.authentication.wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${cagrid.authentication.wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${cagrid.authentication.wsrf.key.password}"/>
         <property name="wantClientAuth" value="true"/>
         <property name="needClientAuth" value="false"/>
-        <property name="includeCipherSuites" value="${cagrid.gridgrouper.wsrf.cipher-suites}"/>
+        <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
     </bean>
-	
-	
-	<bean id="proxySslContextFactory"
-		class="org.cagrid.security.ssl.proxy.trust.JettySslContextFactory">
-		<property name="keyStorePath" value="${cagrid.gridgrouper.wsrf.keystore.path}" />
-		<property name="keyStorePassword" value="${cagrid.gridgrouper.wsrf.keystore.password}" />
-		<property name="keyManagerPassword" value="${cagrid.gridgrouper.wsrf.key.password}" />
-		<property name="trustStore" value="${cagrid.gridgrouper.wsrf.truststore.path}" />
-		<property name="trustStorePassword" value="${cagrid.gridgrouper.wsrf.truststore.password}" />
-		<property name="wantClientAuth" value="true" />
-		<property name="needClientAuth" value="false" />
-		<property name="includeCipherSuites" value="${cagrid.gridgrouper.wsrf.cipher-suites}" />
-	</bean>
-	
-	<jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/GridGrouper/service"
-		xmlns:s="http://cagrid.nci.nih.gov/GridGrouper/service" id="gridgrouperWSRFEP"
-		implementor="#gridgrouperWSRF" bus="cxf" endpointName="e:GridGrouperPortTypePort"
-		serviceName="s:GridGrouperService" address="${cagrid.gridgrouper.wsrf.url}"
-		wsdlLocation="schema/org/cagrid/gridgrouper/GridGrouper_service.wsdl">
-	</jaxws:endpoint>
-	
-	 <!-- UNCOMMENT TO ADD SUPPORT FOR A LEGACY WSRF ENDPOINT -->
-	
 
-	<bean id="legacyregistrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
-		<constructor-arg index="0" value="${cagrid.gridgrouper.wsrf.registration.legacy.on}"></constructor-arg>
-		<constructor-arg index="1" value="${cagrid.gridgrouper.wsrf.registration.xml}"></constructor-arg>
-		<constructor-arg index="2" value="${cagrid.gridgrouper.wsrf.registration.registrant.legacy.url}"></constructor-arg>
-		<constructor-arg index="3" value="${cagrid.gridgrouper.wsrf.registration.index.url}"></constructor-arg>
-	</bean>
 
-    <bean id="legacyProxySslContextFactory"
-          class="org.cagrid.security.ssl.proxy.trust.JettySslContextFactory">
-        <property name="keyStorePath" value="${cagrid.gridgrouper.legacy-wsrf.keystore.path}" />
-        <property name="keyStorePassword" value="${cagrid.gridgrouper.legacy-wsrf.keystore.password}" />
-        <property name="keyManagerPassword" value="${cagrid.gridgrouper.legacy-wsrf.key.password}" />
-        <property name="trustStore" value="${cagrid.gridgrouper.legacy-wsrf.truststore.path}" />
-        <property name="trustStorePassword" value="${cagrid.gridgrouper.legacy-wsrf.truststore.password}" />
-        <property name="wantClientAuth" value="true" />
-        <property name="needClientAuth" value="false" />
-        <property name="includeCipherSuites" value="${cagrid.gridgrouper.wsrf.cipher-suites}" />
+    <bean id="proxySslContextFactory" class="org.cagrid.security.ssl.proxy.trust.JettySslContextFactory">
+        <property name="keyStorePath" value="${cagrid.authentication.wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${cagrid.authentication.wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${cagrid.authentication.wsrf.key.password}"/>
+        <property name="trustStore" value="${cagrid.authentication.wsrf.truststore.path}"/>
+        <property name="trustStorePassword" value="${cagrid.authentication.wsrf.truststore.password}"/>
+        <property name="wantClientAuth" value="true"/>
+        <property name="needClientAuth" value="false"/>
+        <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
+    </bean>
+
+    <jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/AuthenticationService/service" xmlns:s="http://cagrid.nci.nih.gov/AuthenticationService/service" id="authenticationWSRFEP"
+        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationServiceService" address="${cagrid.authentication.wsrf.url}"
+        wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
+    >
+    </jaxws:endpoint>
+
+    <!-- UNCOMMENT TO ADD SUPPORT FOR A LEGACY WSRF ENDPOINT -->
+
+
+    <bean id="legacyregistrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
+        <constructor-arg index="0" value="${cagrid.authentication.wsrf.registration.legacy.on}"></constructor-arg>
+        <constructor-arg index="1" value="${cagrid.authentication.wsrf.registration.xml}"></constructor-arg>
+        <constructor-arg index="2" value="${cagrid.authentication.wsrf.registration.registrant.legacy.url}"></constructor-arg>
+        <constructor-arg index="3" value="${cagrid.authentication.wsrf.registration.index.url}"></constructor-arg>
+    </bean>
+
+    <bean id="legacyProxySslContextFactory" class="org.cagrid.security.ssl.proxy.trust.JettySslContextFactory">
+        <property name="keyStorePath" value="${cagrid.authentication.legacy-wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${cagrid.authentication.legacy-wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${cagrid.authentication.legacy-wsrf.key.password}"/>
+        <property name="trustStore" value="${cagrid.authentication.legacy-wsrf.truststore.path}"/>
+        <property name="trustStorePassword" value="${cagrid.authentication.legacy-wsrf.truststore.password}"/>
+        <property name="wantClientAuth" value="true"/>
+        <property name="needClientAuth" value="false"/>
+        <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
     </bean>
 
     <bean id="legacyTrustServiceSSLContextFactory" class="org.cagrid.trust.service.TrustServiceJettySSLContextFactory ">
         <property name="trustService" ref="trustService"/>
-        <property name="keyStorePath" value="${cagrid.gridgrouper.legacy-wsrf.keystore.path}"/>
-        <property name="keyStorePassword" value="${cagrid.gridgrouper.legacy-wsrf.keystore.password}"/>
-        <property name="keyManagerPassword" value="${cagrid.gridgrouper.legacy-wsrf.key.password}"/>
+        <property name="keyStorePath" value="${cagrid.authentication.legacy-wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${cagrid.authentication.legacy-wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${cagrid.authentication.legacy-wsrf.key.password}"/>
         <property name="wantClientAuth" value="true"/>
         <property name="needClientAuth" value="false"/>
-        <property name="includeCipherSuites" value="${cagrid.gridgrouper.wsrf.cipher-suites}"/>
+        <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
     </bean>
 
-    <jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/GridGrouper/service"
-                    xmlns:s="http://cagrid.nci.nih.gov/GridGrouper/service" id="legacyGridgrouperWSRFEP"
-                    implementor="#gridgrouperWSRF" bus="cxf" endpointName="e:GridGrouperPortTypePort"
-                    serviceName="s:GridGrouperService" address="${cagrid.gridgrouper.legacy-wsrf.url}"
-                    wsdlLocation="schema/org/cagrid/gridgrouper/GridGrouper_service.wsdl">
+    <jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/AuthenticationService/service" xmlns:s="http://cagrid.nci.nih.gov/AuthenticationService/service" id="legacyAuthenticationServiceWSRFEP"
+        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationServiceService" address="${cagrid.authentication.legacy-wsrf.url}"
+        wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
+    >
     </jaxws:endpoint>
 
 </beans>

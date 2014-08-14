@@ -22,9 +22,11 @@ import junit.framework.TestCase;
 
 import org.apache.xml.security.signature.XMLSignature;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserResponse;
+import org.cagrid.gaards.authentication.AuthenticateUserResponse;
+import org.cagrid.gaards.authentication.service.impl.SAMLConstants;
 import org.cagrid.gaards.authentication.test.CA;
-import org.cagrid.gaards.authentication.test.Credential;;
+import org.cagrid.gaards.authentication.test.Credential;
+import org.oasis.names.tc.saml.assertion.AssertionType;
 
 public class TestSerializationDeserialization extends TestCase {
     
@@ -113,7 +115,9 @@ public class TestSerializationDeserialization extends TestCase {
             }
             
             AuthenticateUserResponse res = new AuthenticateUserResponse();
-            res.setAssertion(saml);
+            AssertionType aType = new AssertionType();
+            aType.setSamlAssertion(saml);
+            res.setAssertion(aType);
             /*
             String str = Utils.serialize(res);
             AuthenticateUserResponse res2 = (AuthenticateUserResponse) Utils.deserialize(str, AuthenticateUserResponse.class);

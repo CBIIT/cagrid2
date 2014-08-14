@@ -2,7 +2,7 @@
  * $Id: DefaultSAMLProvider.java,v 1.3 2008-06-02 14:50:12 langella Exp $
  *
  */
-package org.cagrid.gaards.authentication.service;
+package org.cagrid.gaards.authentication.service.impl;
 
 import gov.nih.nci.cagrid.common.Utils;
 import gov.nih.nci.cagrid.opensaml.SAMLAssertion;
@@ -19,6 +19,7 @@ import gov.nih.nci.security.authentication.principal.LoginIdPrincipal;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.net.URI;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
@@ -34,7 +35,8 @@ import javax.security.auth.Subject;
 import javax.xml.namespace.QName;
 
 import org.apache.xml.security.signature.XMLSignature;
-import org.cagrid.gaards.authentication.common.InsufficientAttributeException;
+import org.cagrid.core.common.FaultHelper;
+import org.cagrid.gaards.authentication.faults.InsufficientAttributeException;
 import org.cagrid.gaards.pki.CertUtil;
 import org.cagrid.gaards.pki.KeyUtil;
 
@@ -44,17 +46,24 @@ import org.cagrid.gaards.pki.KeyUtil;
  * @author Joshua Phillips
  * 
  */
-public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.service.SAMLProvider {
+public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.service.impl.SAMLProvider {
 
-    private String certificateFileName;
-    private String privateKeyFileName;
+    private URI certificateURI;
+    private URI privateKeyURI;
     private X509Certificate certificate;
     private PrivateKey privateKey;
     private String password;
 
     public void loadCertificates() {
         try {
-            File certFile = new File(getCertificateFileName());
+            File certFile = null;
+            if (getCertificateURI().isAbsolute()) {
+                certFile = new File(getCertificateURI());
+            } else {
+                certFile = new File(getCertificateURI().toString());
+            }
+            // System.out.println("Using:"+certFile);
+
             if (!certFile.exists()) {
                 throw new Exception("Certificate file not found at: " + certFile.getAbsolutePath());
             }
@@ -64,7 +73,14 @@ public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.ser
                 throw new Exception("Failed to load certificate.");
             }
             setCertificate(cert);
-            File keyFile = new File(getPrivateKeyFileName());
+
+            File keyFile = null;
+            if (getPrivateKeyURI().isAbsolute()) {
+                keyFile = new File(getPrivateKeyURI());
+            } else {
+                keyFile = new File(getPrivateKeyURI().toString());
+            }
+
             if (!keyFile.exists()) {
                 throw new Exception("Private Key file not found at: " + keyFile.getAbsolutePath());
             }
@@ -131,7 +147,9 @@ public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.ser
         }
         if (firstName == null || firstName.trim().length() < 1 || lastName == null || lastName.trim().length() < 1
                 || email == null || email.trim().length() < 1) {
-            throw new InsufficientAttributeException("Missing attributes for the user");
+            InsufficientAttributeException fault = FaultHelper.createFaultException(
+                    InsufficientAttributeException.class, "Missing attributes for the user");
+            throw fault;
         }
 
         SAMLAssertion saml = null;
@@ -203,20 +221,20 @@ public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.ser
         return saml;
     }
 
-    public String getCertificateFileName() {
-        return certificateFileName;
+    public URI getCertificateURI() {
+        return certificateURI;
     }
 
-    public void setCertificateFileName(String certificateFileName) {
-        this.certificateFileName = certificateFileName;
+    public void setCertificateURI(URI certificateURI) {
+        this.certificateURI = certificateURI;
     }
 
-    public String getPrivateKeyFileName() {
-        return privateKeyFileName;
+    public URI getPrivateKeyURI() {
+        return privateKeyURI;
     }
 
-    public void setPrivateKeyFileName(String privateKeyFileName) {
-        this.privateKeyFileName = privateKeyFileName;
+    public void setPrivateKeyURI(URI privateKeyURI) {
+        this.privateKeyURI = privateKeyURI;
     }
 
 }

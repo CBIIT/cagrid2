@@ -11,11 +11,11 @@ import java.util.Set;
 
 import javax.security.auth.Subject;
 
+import org.cagrid.core.common.FaultHelper;
 import org.cagrid.gaards.authentication.Credential;
 import org.cagrid.gaards.authentication.OneTimePassword;
-import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
-import org.cagrid.core.common.FaultHelper;
-import org.cagrid.gaards.authentication.service.BasicAuthenticationWithOneTimePasswordSubjectProvider;
+import org.cagrid.gaards.authentication.faults.InvalidCredentialException;
+import org.cagrid.gaards.authentication.service.impl.BasicAuthenticationWithOneTimePasswordSubjectProvider;
 
 public class ExampleSubjectProvider2 extends
 		BasicAuthenticationWithOneTimePasswordSubjectProvider {

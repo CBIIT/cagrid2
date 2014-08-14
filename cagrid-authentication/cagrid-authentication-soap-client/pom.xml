@@ -19,12 +19,11 @@
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 						<Export-Package>
-							org.cagrid.authentication.soapclient
+							 org.cagrid.authentication.soapclient
 						</Export-Package>
-                        <Private-Package>
-                        </Private-Package>
+                        <Private-Package/>
 						<Import-Package>
-                            *
+                             org.cagrid.authentication.soapclient,*
 						</Import-Package>
 					</instructions>
 				</configuration>

@@ -1,9 +1,5 @@
 package org.cagrid.gaards.authentication.service;
 
-import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
-import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
-import org.cagrid.gaards.authentication.service.BasicAuthenticationCredential;
-//import gov.nih.nci.cagrid.common.FaultUtil;
 import gov.nih.nci.cagrid.opensaml.SAMLAssertion;
 
 import java.io.File;
@@ -16,9 +12,14 @@ import junit.framework.TestCase;
 import org.cagrid.gaards.authentication.BasicAuthentication;
 import org.cagrid.gaards.authentication.OneTimePassword;
 import org.cagrid.gaards.authentication.common.AuthenticationProfile;
+import org.cagrid.gaards.authentication.faults.CredentialNotSupportedException;
+import org.cagrid.gaards.authentication.faults.InvalidCredentialException;
+import org.cagrid.gaards.authentication.service.impl.AuthenticationManager;
+import org.cagrid.gaards.authentication.service.impl.SAMLConstants;
 import org.cagrid.gaards.authentication.test.AuthenticationProperties;
 import org.cagrid.gaards.authentication.test.Constants;
 import org.cagrid.gaards.saml.encoding.SAMLUtils;
+//import gov.nih.nci.cagrid.common.FaultUtil;
 
 /**
  * @author <A href="mailto:langella@bmi.osu.edu">Stephen Langella </A>

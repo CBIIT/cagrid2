@@ -1,7 +1,6 @@
 package org.cagrid.authentication.soapclient;
 
-import org.cagrid.authentication.soapclient.AuthenticationServiceSoapClientFactory;
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticationServicePortType;
+import org.cagrid.gaards.authentication.AuthenticationServicePortType;
 
 public abstract class AuthenticationServiceClientBase {
 

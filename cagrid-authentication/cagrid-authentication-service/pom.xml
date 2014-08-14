@@ -26,40 +26,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package/>
-                        <Private-Package>org.cagrid.gaards.authentication.service.impl,org.cagrid.gaards.authentication.service</Private-Package>
+                        <Private-Package>org.cagrid.gaards.authentication.service.impl</Private-Package>
                         <Import-Package>
-                            !org.apache.commons.cli,
                             org.apache.cxf.jaxws.spi, *
                         </Import-Package>
                     </instructions>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>src/main/resources/serviceMetadata.xml</file>
-                                    <type>xml</type>
-                                    <classifier>serviceMetadata</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>src/main/resources/serviceSecurityMetadata.xml</file>
-                                    <type>xml</type>
-                                    <classifier>serviceSecurityMetadata</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
@@ -99,6 +71,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cagrid-csmapi</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

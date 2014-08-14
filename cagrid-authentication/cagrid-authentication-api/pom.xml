@@ -40,23 +40,19 @@
                                                 <extraarg>-impl</extraarg>
                                                 <extraarg>-client</extraarg>
 
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://cagrid.nci.nih.gov/AuthenticationService=org.cagrid.authenticationService</extraarg>
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://cagrid.nci.nih.gov/1/authentication-service=org.cagrid.gaards.authentication.service</extraarg>
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://cagrid.nci.nih.gov/1/AuthenticationService=org.cagrid.authenticationService.model</extraarg>
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://cagrid.nci.nih.gov/AuthenticationService=org.cagrid.authenticationService.wsrf.stubs</extraarg>
                                                 <extraargs>-p</extraargs>
-                                                <extraarg>http://cagrid.nci.nih.gov/AuthenticationService/types=org.cagrid.authenticationService.types</extraarg>
-                                                <extraargs>-p</extraargs>
-                                                <extraarg>http://cagrid.nci.nih.gov/AuthenticationService/service=org.cagrid.authenticationService.wsrf.service</extraarg>
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://gaards.cagrid.org/authentication-faults=org.cagrid.gaards.authentication.faults</extraarg>
-                                                <extraarg>-p</extraarg>
-                                                <extraarg>http://authentication.gaards.cagrid.org/AuthenticationService/types=org.cagrid.gaards.authentication.types</extraarg>
+                                                <extraarg>http://cagrid.nci.nih.gov/AuthenticationService/service=org.cagrid.authentication.wsrf.service</extraarg>
 
+                                                <extraarg>-nexclude</extraarg>
+                                                <extraarg>http://authentication.gaards.cagrid.org/AuthenticationService=org.cagrid.gaards.authentication</extraarg>
+                                                <extraarg>-nexclude</extraarg>
+                                                <extraarg>http://gaards.cagrid.org/authentication-faults=org.cagrid.gaards.authentication.faults</extraarg>
+                                                <extraarg>-nexclude</extraarg>
+                                                <extraarg>http://gaards.cagrid.org/authentication/lockout=org.cagrid.gaards.authentication.lockout</extraarg>
+                                                <extraarg>-nexclude</extraarg>
+                                                <extraarg>http://cagrid.nci.nih.gov/1/authentication-service=org.cagrid.gaards.authentication.service</extraarg>
+                                                <extraarg>-nexclude</extraarg>
+                                                <extraarg>http://authentication.gaards.cagrid.org/AuthenticationService/types=org.cagrid.gaards.authentication.types</extraarg>
                                                 <extraarg>-nexclude</extraarg>
                                                 <extraarg>http://security.introduce.cagrid.nci.nih.gov/ServiceSecurity=org.cagrid.gaards.security.servicesecurity</extraarg>
                                                 <extraarg>-nexclude</extraarg>
@@ -214,14 +210,9 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>
-                            schema.org.cagrid.authentication,
-                            org.cagrid.authentication,
+                            schema.org.cagrid.AuthenticationService,
                             org.cagrid.authentication.service,
-                            org.cagrid.authentication.service.exception,
-                            org.cagrid.authentication.model,
-                            org.cagrid.authentication.types,
-                            org.cagrid.authentication.wsrf.service,
-                            org.cagrid.authentication.wsrf.stubs
+                            org.cagrid.authentication.wsrf.service
                         </Export-Package>
                         <Import-Package>
                             *

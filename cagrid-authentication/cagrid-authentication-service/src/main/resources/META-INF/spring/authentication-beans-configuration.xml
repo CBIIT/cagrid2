@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans
-        xmlns="http://www.springframework.org/schema/beans"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns:p="http://www.springframework.org/schema/p"
-        xmlns:tx="http://www.springframework.org/schema/tx"
-        xsi:schemaLocation="
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
 	        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
-        >
+>
 
     <bean id="defaultPropertiesPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="location" value="classpath:META-INF/spring/authentication.properties"/>
@@ -15,16 +11,7 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-    <bean id="jaxbResourceProperties" class="java.util.HashMap">
-	<constructor-arg>
-		<map>
-			<entry key="serviceMetadata" value="${cagrid.authentication.service.metadata.url}" />
-			<entry key="serviceSecurityMetadata" value="${cagrid.authentication.service.security.metadata.url}" />
-		</map>
-	</constructor-arg>
-    </bean>
-	
-    <bean id="subjectProvider" class="org.cagrid.gaards.authentication.service.DefaultSubjectProvider">
+    <bean id="subjectProvider" class="org.cagrid.gaards.authentication.service.impl.DefaultSubjectProvider">
         <constructor-arg value="${gaards.authentication.csm.truststore}"/>
         <property name="authenticationManager">
             <bean class="gov.nih.nci.security.SecurityServiceProvider" factory-method="getAuthenticationManager">
@@ -32,24 +19,20 @@
             </bean>
         </property>
     </bean>
-     
-    
-    <bean id="samlProvider" class="org.cagrid.gaards.authentication.service.DefaultSAMLProvider" 
-        init-method="loadCertificates">
-        <property name="certificateFileName" value="${gaards.authentication.saml.cert}"/>
-        <property name="privateKeyFileName" value="${gaards.authentication.saml.key}"/>
+
+    <bean id="samlProvider" class="org.cagrid.gaards.authentication.service.impl.DefaultSAMLProvider" init-method="loadCertificates">
+        <property name="certificateURI" value="${gaards.authentication.saml.cert}"/>
+        <property name="privateKeyURI" value="${gaards.authentication.saml.key}"/>
         <property name="password" value="${gaards.authentication.saml.key.password}"/>
     </bean>
 
-    <bean id="authenticationProvider" class="org.cagrid.gaards.authentication.service.DefaultAuthenticationProvider">
+    <bean id="authenticationProvider" class="org.cagrid.gaards.authentication.service.impl.DefaultAuthenticationProvider">
         <property name="subjectProvider" ref="subjectProvider"/>
         <property name="samlProvider" ref="samlProvider"/>
-    </bean>    
+    </bean>
 
-    <bean id="authenticationService" class="org.cagrid.gaards.authentication.service.impl.AuthenticationServiceImpl"
-	init-method="initialize">
-	<constructor-arg index="0" ref="authenticationProvider" />
-	<constructor-arg ref="jaxbResourceProperties" />
+    <bean id="authenticationService" class="org.cagrid.gaards.authentication.service.impl.AuthenticationServiceImpl" init-method="initialize">
+        <constructor-arg index="0" ref="authenticationProvider"/>
     </bean>
 
 </beans>

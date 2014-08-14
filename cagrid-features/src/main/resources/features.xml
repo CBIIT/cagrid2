@@ -40,8 +40,8 @@
     
     <!-- Authentication Service -->
     <feature name="cagrid-authentication" version="${project.version}">
-        <configfile finalname="/etc/cagrid-authentication/serviceMetadata.xml">mvn:${project.groupId}/cagrid-authentication-service/${project.version}/xml/serviceMetadata</configfile>
-        <configfile finalname="/etc/cagrid-authentication/serviceSecurityMetadata.xml">mvn:${project.groupId}/cagrid-authentication-service/${project.version}/xml/serviceSecurityMetadata</configfile>
+        <configfile finalname="/etc/cagrid-authentication/serviceMetadata.xml">mvn:${project.groupId}/cagrid-authentication-wsrf/${project.version}/xml/serviceMetadata</configfile>
+        <configfile finalname="/etc/cagrid-authentication/serviceSecurityMetadata.xml">mvn:${project.groupId}/cagrid-authentication-wsrf/${project.version}/xml/serviceSecurityMetadata</configfile>
         <configfile finalname="/etc/cagrid-authentication/registration.xml">mvn:${project.groupId}/cagrid-authentication-wsrf/${project.version}/xml/registration</configfile>
         <feature version="${project.version}">cagrid-service-registration</feature>
         <feature version="${project.version}">cagrid-gaards</feature>

@@ -15,12 +15,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.ws.WebServiceContext;
 
-import org.cagrid.authenticationService.exceptions.AuthenticationProviderException;
-import org.cagrid.authenticationService.exceptions.CredentialNotSupportedException;
-import org.cagrid.authenticationService.exceptions.InsufficientAttributeException;
-import org.cagrid.authenticationService.exceptions.InvalidCredentialException;
-import org.cagrid.authenticationService.wsrf.stubs.AuthenticateResponse;
-import org.cagrid.authenticationService.wsrf.stubs.AuthenticationServiceResourceProperties;
+import org.cagrid.authentication.service.AuthenticationService;
 import org.cagrid.core.common.JAXBUtils;
 import org.cagrid.core.resource.ExternalSingletonResourceProperty;
 import org.cagrid.core.resource.ExternalSingletonResourcePropertyValue;
@@ -29,11 +24,20 @@ import org.cagrid.core.resource.JAXBResourcePropertySupport;
 import org.cagrid.core.resource.ResourceImpl;
 import org.cagrid.core.resource.ResourcePropertyDescriptor;
 import org.cagrid.core.resource.SingletonResourceHomeImpl;
+import org.cagrid.gaards.authentication.AuthenticateUserRequest;
+import org.cagrid.gaards.authentication.AuthenticateUserResponse;
 import org.cagrid.gaards.authentication.AuthenticationProfiles;
+import org.cagrid.gaards.authentication.AuthenticationProviderFaultFaultMessage;
+import org.cagrid.gaards.authentication.AuthenticationServicePortTypeImpl;
+import org.cagrid.gaards.authentication.AuthenticationServiceResourceProperties;
 import org.cagrid.gaards.authentication.BasicAuthentication;
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserRequest;
-import org.cagrid.gaards.authentication.authenticationservice.AuthenticationServicePortTypeImpl;
-import org.cagrid.gaards.authentication.service.AuthenticationService;
+import org.cagrid.gaards.authentication.CredentialNotSupportedFaultFaultMessage;
+import org.cagrid.gaards.authentication.InsufficientAttributeFaultFaultMessage;
+import org.cagrid.gaards.authentication.InvalidCredentialFaultFaultMessage;
+import org.cagrid.gaards.authentication.faults.AuthenticationProviderException;
+import org.cagrid.gaards.authentication.faults.CredentialNotSupportedException;
+import org.cagrid.gaards.authentication.faults.InsufficientAttributeException;
+import org.cagrid.gaards.authentication.faults.InvalidCredentialException;
 import org.cagrid.gaards.authentication.service.SAMLAssertion;
 import org.cagrid.gaards.security.servicesecurity.GetServiceSecurityMetadataRequest;
 import org.cagrid.gaards.security.servicesecurity.GetServiceSecurityMetadataResponse;
@@ -44,6 +48,7 @@ import org.cagrid.wsrf.properties.ResourceException;
 import org.cagrid.wsrf.properties.ResourceHome;
 import org.cagrid.wsrf.properties.ResourceProperty;
 import org.cagrid.wsrf.properties.ResourcePropertySet;
+import org.oasis.names.tc.saml.assertion.AssertionType;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourceProperties;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetMultipleResourcePropertiesResponse;
 import org.oasis_open.docs.wsrf._2004._06.wsrf_ws_resourceproperties_1_2_draft_01.GetResourcePropertyResponse;
@@ -67,55 +72,61 @@ public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortType
     private ResourceProperty<ServiceMetadata> serviceMetadataResourceProperty;
     private ResourceProperty<ServiceSecurityMetadata> serviceSecurityMetadataResourceProperty;
 
-
     @javax.annotation.Resource
     private WebServiceContext wsContext;
 
     private final ResourceHome resourceHome;
 
-    public AuthenticationServiceWSRFImpl(AuthenticationService service,  Map<String, String> jaxbResourcePropertiesMap) {
+    public AuthenticationServiceWSRFImpl(AuthenticationService service, Map<String, String> jaxbResourcePropertiesMap) {
         this.logger = LoggerFactory.getLogger(getClass());
         this.authenticationService = service;
         resourceHome = getResourceHome(jaxbResourcePropertiesMap);
     }
 
-    @Override
-    public org.cagrid.authenticationService.wsrf.stubs.AuthenticateResponse authenticate(org.cagrid.authenticationService.wsrf.stubs.AuthenticateRequest parameters) throws org.cagrid.authenticationService.wsrf.stubs.InvalidCredentialFaultFaultMessage , org.cagrid.authenticationService.wsrf.stubs.InsufficientAttributeFaultFaultMessage , org.cagrid.authenticationService.wsrf.stubs.AuthenticationProviderFaultFaultMessage {
-        String message = "authenticate";
-        try {
-            SAMLAssertion assertion = authenticationService.authenticate(parameters.getCredential().getCredential());
-            AuthenticateResponse response = new AuthenticateResponse();
-            response.setSAMLAssertion(assertion);
-            return response;
-        } catch (InvalidCredentialException e) {
-            throw new org.cagrid.authenticationService.wsrf.stubs.InvalidCredentialFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
-        } catch (InsufficientAttributeException e) {
-            throw new org.cagrid.authenticationService.wsrf.stubs.InsufficientAttributeFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
-        } catch (AuthenticationProviderException e) {
-            throw new org.cagrid.authenticationService.wsrf.stubs.AuthenticationProviderFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
-        }
-    }
+    // @Override
+    // public AuthenticateResponse authenticate(AuthenticateRequest parameters) throws
+    // InvalidCredentialFaultFaultMessage,
+    // InsufficientAttributeFaultFaultMessage, AuthenticationProviderFaultFaultMessage {
+    // String message = "authenticate";
+    // try {
+    // SAMLAssertion assertion = authenticationService.authenticate(parameters.getCredential().getCredential());
+    // AuthenticateResponse response = new AuthenticateResponse();
+    // response.setSAMLAssertion(assertion);
+    // return response;
+    // } catch (InvalidCredentialException e) {
+    // throw new InvalidCredentialFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+    // } catch (InsufficientAttributeException e) {
+    // throw new InsufficientAttributeFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+    // } catch (AuthenticationProviderException e) {
+    // throw new AuthenticationProviderFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+    // }
+    // }
 
     @Override
-    public org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserResponse authenticateUser(AuthenticateUserRequest parameters) throws org.cagrid.gaards.authentication.authenticationservice.InvalidCredentialFaultFaultMessage , org.cagrid.gaards.authentication.authenticationservice.CredentialNotSupportedFaultFaultMessage , org.cagrid.gaards.authentication.authenticationservice.InsufficientAttributeFaultFaultMessage , org.cagrid.gaards.authentication.authenticationservice.AuthenticationProviderFaultFaultMessage    {
+    public AuthenticateUserResponse authenticateUser(AuthenticateUserRequest parameters)
+            throws InvalidCredentialFaultFaultMessage, CredentialNotSupportedFaultFaultMessage,
+            InsufficientAttributeFaultFaultMessage, AuthenticationProviderFaultFaultMessage {
         String message = "authenticate";
         try {
-        	gov.nih.nci.cagrid.opensaml.SAMLAssertion assertion = authenticationService.authenticateUser(parameters.getCredential().getCredential());
-            org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserResponse response = new org.cagrid.gaards.authentication.authenticationservice.AuthenticateUserResponse();
-            response.setAssertion(assertion);
+            gov.nih.nci.cagrid.opensaml.SAMLAssertion assertion = authenticationService.authenticateUser(parameters
+                    .getCredential().getCredential());
+            AuthenticateUserResponse response = new AuthenticateUserResponse();
+            AssertionType aType = new AssertionType();
+            aType.setSamlAssertion(assertion);
+            response.setAssertion(aType);
             return response;
         } catch (InvalidCredentialException e) {
-            throw new org.cagrid.gaards.authentication.authenticationservice.InvalidCredentialFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+            throw new InvalidCredentialFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
         } catch (InsufficientAttributeException e) {
-            throw new org.cagrid.gaards.authentication.authenticationservice.InsufficientAttributeFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+            throw new InsufficientAttributeFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
         } catch (AuthenticationProviderException e) {
-            throw new org.cagrid.gaards.authentication.authenticationservice.AuthenticationProviderFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+            throw new AuthenticationProviderFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
         } catch (CredentialNotSupportedException e) {
-            throw new org.cagrid.gaards.authentication.authenticationservice.CredentialNotSupportedFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
+            throw new CredentialNotSupportedFaultFaultMessage(message + ":" + e.getMessage(), e.getFault());
         }
     }
 
-   @Override
+    @Override
     public GetMultipleResourcePropertiesResponse getMultipleResourceProperties(
             GetMultipleResourceProperties getMultipleResourcePropertiesRequest) throws ResourceUnknownFault,
             InvalidResourcePropertyQNameFault {
@@ -209,7 +220,6 @@ public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortType
         return response;
     }
 
-
     private ResourceHome getResourceHome(Map<String, String> jaxbResourcePropertiesMap) {
         ResourceImpl resource = new ResourceImpl(null);
         ResourceHome resourceHome = new SingletonResourceHomeImpl(resource);
@@ -288,14 +298,14 @@ public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortType
         }
         return resourceHome;
     }
-    
+
     private AuthenticationProfiles getAuthenticationProfiles() {
         AuthenticationProfiles authProfiles = new AuthenticationProfiles();
         QName basicAuthenticationQName = JAXBUtils.getQName(BasicAuthentication.class);
         authProfiles.getProfile().add(basicAuthenticationQName);
         return authProfiles;
     }
-    
+
     /*
      * The client-side reconstruction of QNames from the getResourceProperty response is broken. It depends on the
      * namespace prefix in the 'profile' element content being the same as in the element tag. To try to work around
@@ -332,5 +342,5 @@ public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortType
             logger.error("Exception marshalling AuthenticationProfiles", e);
         }
         return authProfilesElement;
-    }    
+    }
 }

@@ -198,6 +198,7 @@
 						<Export-Package>
 							schema.org.cagrid.gaards,
 							org.cagrid.gaards.authentication,
+                            org.cagrid.gaards.authentication.common,
 							org.cagrid.gaards.authentication.faults,
 							org.cagrid.gaards.authentication.lockout,
 							org.cagrid.gaards.authentication.service,
