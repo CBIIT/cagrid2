@@ -9,7 +9,7 @@
 
     <osgix:cm-properties id="preProps" persistent-id="cagrid.authentication.service">
         <prop key="gaards.authentication.csm.truststore"></prop>
-        <prop key="gaards.authentication.csm.app.context">myapp</prop>
+        <prop key="gaards.authentication.csm.app.context">AUTHNSVC</prop>
         <prop key="gaards.authentication.saml.cert">file://${karaf.base}/etc/cagrid-authentication/cert.pem</prop>
         <prop key="gaards.authentication.saml.key">file://${karaf.base}/etc/cagrid-authentication/key.pem</prop>
         <prop key="gaards.authentication.saml.key.password"></prop>
