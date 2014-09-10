@@ -132,6 +132,5 @@
         <module>cagrid-authentication-service</module>
         <module>cagrid-authentication-wsrf</module>
         <module>cagrid-authentication-soap-client</module>
-        <module>cagrid-authentication-service-tools</module>
     </modules>
 </project>

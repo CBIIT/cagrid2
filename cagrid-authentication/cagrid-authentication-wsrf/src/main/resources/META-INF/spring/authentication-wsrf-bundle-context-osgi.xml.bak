@@ -44,9 +44,8 @@
         <prop key="cagrid.authentication.wsrf.registration.registrant.legacy.url">${cagrid.authentication.legacy-wsrf.url}</prop>
         <prop key="cagrid.authentication.wsrf.registration.xml">${karaf.base}/etc/cagrid-authentication/registration.xml</prop>
         <prop key="cagrid.authentication.wsrf.registration.index.url">http://localhost:8080/wsrf/services/DefaultIndexService</prop>
-    	<prop key="cagrid.authentication.wsrf.metadata.url">file:///${karaf.base}/etc/cagrid-authentication/serviceMetadata.xml</prop>
-        <prop key="cagrid.authentication.wsrf.security.metadata.url">file:///${karaf.base}/etc/cagrid-authentication/serviceSecurityMetadata.xml</prop>
-
+        <prop key="cagrid.authentication.wsrf.metadata.url">file://${karaf.base}/etc/cagrid-authentication/serviceMetadata.xml</prop>
+        <prop key="cagrid.authentication.wsrf.security.metadata.url">file://${karaf.base}/etc/cagrid-authentication/serviceSecurityMetadata.xml</prop>
     </osgix:cm-properties>
 
     <ctx:property-placeholder properties-ref="preProps"/>
