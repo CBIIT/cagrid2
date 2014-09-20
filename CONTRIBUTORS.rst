@@ -3,11 +3,15 @@
 ---------------
 
 ---------------------------------------------------
+Tidecube LLC
+---------------------------------------------------
+* Scott Oster <scott@tidecube.com>
+* Stephen Langella <steve@tidecube.com>
+* Shannon Hastings <shannon@tidecube.com>
+
+---------------------------------------------------
 Inventrio LLC
 ---------------------------------------------------
-* Scott Oster <scott.oster@inventrio.com>
-* Steve Langella <stephen.langella@inventrio.com>
-* Shannon Hastings <shannon.hastings@inventrio.com>
 * Dave Heisterberg <dave.heisterberg@inventrio.com>
 * Calixto Melean <calixto.melean@inventrio.com>
 * Justin Kuss <justin.kuss@inventrio.com>
