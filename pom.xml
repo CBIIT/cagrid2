@@ -443,18 +443,7 @@
 		Repository</name> <url>https://ncimvn.nci.nih.gov/nexus/content/repositories/snapshots/</url> 
 		</snapshotRepository> </distributionManagement> -->
 	<!-- TODO: replace this with NCI info once they provide it -->
-	<distributionManagement>
-		<snapshotRepository>
-			<id>inventrio-nexus-snapshots</id>
-			<name>Inventrio Nexus Snapshots</name>
-			<url>https://repo.inventrio.com/content/repositories/snapshots/</url>
-		</snapshotRepository>
-		<repository>
-			<id>inventrio-nexus-releases</id>
-			<name>Inventrio Release Repository</name>
-			<url>https://repo.inventrio.com/content/repositories/releases/</url>
-		</repository>
-	</distributionManagement>
+	
 	<scm>
 		<connection>scm:git:git://github.com/CBIIT/cagrid2.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/CBIIT/cagrid2.git</developerConnection>
@@ -505,5 +494,6 @@
 		<module>cagrid-mms</module>
 		<module>cagrid-index</module>
 		<module>cagrid-authentication</module>
+        <module>cagrid-archetypes</module>
 	</modules>
 </project>

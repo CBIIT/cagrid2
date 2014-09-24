@@ -22,8 +22,8 @@ import javax.xml.bind.annotation.XmlSeeAlso;
  */
 
 @javax.jws.WebService(
-                      serviceName = "$service.ServiceName",
-                      targetNamespace = "$service.Namespace",
+                      serviceName = "AuthenticationService",
+                      targetNamespace = "http://authentication.gaards.cagrid.org/AuthenticationService",
                       wsdlLocation = "/schema/org/cagrid/gaards/AuthenticationService.wsdl",
                       endpointInterface = "org.cagrid.gaards.authentication.AuthenticationServicePortType")
                       

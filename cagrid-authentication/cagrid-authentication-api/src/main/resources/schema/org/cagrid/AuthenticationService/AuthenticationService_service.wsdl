@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions name="AuthenticationService" targetNamespace="http://cagrid.nci.nih.gov/AuthenticationService/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:binding="http://cagrid.nci.nih.gov/AuthenticationService/bindings" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
-  <wsdl:import namespace="http://cagrid.nci.nih.gov/AuthenticationService/bindings" location="./AuthenticationService_bindings.wsdl"/>
-  <wsdl:service name="AuthenticationServiceService">
+<wsdl:definitions name="AuthenticationService" targetNamespace="http://authentication.gaards.cagrid.org/AuthenticationService/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:binding="http://authentication.gaards.cagrid.org/AuthenticationService/bindings" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <wsdl:import namespace="http://authentication.gaards.cagrid.org/AuthenticationService/bindings" location="AuthenticationService_bindings.wsdl"/>
+  <wsdl:service name="AuthenticationService">
     <wsdl:port name="AuthenticationServicePortTypePort" binding="binding:AuthenticationServicePortTypeSOAPBinding">
       <soap:address location="http://localhost:8080/wsrf/services/"/>
     </wsdl:port>

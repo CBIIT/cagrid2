@@ -94,8 +94,8 @@
         <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
     </bean>
 
-    <jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/AuthenticationService/service" xmlns:s="http://cagrid.nci.nih.gov/AuthenticationService/service" id="authenticationWSRFEP"
-        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationServiceService" address="${cagrid.authentication.wsrf.url}"
+    <jaxws:endpoint xmlns:e="http://authentication.gaards.cagrid.org/AuthenticationService/service" xmlns:s="http://authentication.gaards.cagrid.org/AuthenticationService/service" id="authenticationWSRFEP"
+        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationService" address="${cagrid.authentication.wsrf.url}"
         wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
     >
     </jaxws:endpoint>
@@ -131,8 +131,8 @@
         <property name="includeCipherSuites" value="${cagrid.authentication.wsrf.cipher-suites}"/>
     </bean>
 
-    <jaxws:endpoint xmlns:e="http://cagrid.nci.nih.gov/AuthenticationService/service" xmlns:s="http://cagrid.nci.nih.gov/AuthenticationService/service" id="legacyAuthenticationServiceWSRFEP"
-        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationServiceService" address="${cagrid.authentication.legacy-wsrf.url}"
+    <jaxws:endpoint xmlns:e="http://authentication.gaards.cagrid.org/AuthenticationService/service" xmlns:s="http://authentication.gaards.cagrid.org/AuthenticationService/service" id="legacyAuthenticationServiceWSRFEP"
+        implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationService" address="${cagrid.authentication.legacy-wsrf.url}"
         wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
     >
     </jaxws:endpoint>

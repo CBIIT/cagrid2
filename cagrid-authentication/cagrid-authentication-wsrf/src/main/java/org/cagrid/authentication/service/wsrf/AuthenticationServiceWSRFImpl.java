@@ -63,6 +63,11 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+@javax.jws.WebService(
+        serviceName = "AuthenticationServiceService",
+        targetNamespace = "http://authentication.gaards.cagrid.org/AuthenticationService/service",
+        wsdlLocation = "/schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl",
+        endpointInterface = "org.cagrid.gaards.authentication.AuthenticationServicePortType")
 public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortTypeImpl {
 
     private AuthenticationService authenticationService;

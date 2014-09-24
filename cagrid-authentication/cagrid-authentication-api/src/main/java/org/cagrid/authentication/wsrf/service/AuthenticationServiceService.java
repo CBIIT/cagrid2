@@ -16,13 +16,13 @@ import org.cagrid.gaards.authentication.AuthenticationServicePortType;
  */
 @WebServiceClient(name = "AuthenticationServiceService", 
                   wsdlLocation = "/schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl",
-                  targetNamespace = "http://cagrid.nci.nih.gov/AuthenticationService/service") 
+                  targetNamespace = "http://authentication.gaards.cagrid.org/AuthenticationService/service") 
 public class AuthenticationServiceService extends Service {
 
     public final static URL WSDL_LOCATION;
 
-    public final static QName SERVICE = new QName("http://cagrid.nci.nih.gov/AuthenticationService/service", "AuthenticationServiceService");
-    public final static QName AuthenticationServicePortTypePort = new QName("http://cagrid.nci.nih.gov/AuthenticationService/service", "AuthenticationServicePortTypePort");
+    public final static QName SERVICE = new QName("http://authentication.gaards.cagrid.org/AuthenticationService/service", "AuthenticationServiceService");
+    public final static QName AuthenticationServicePortTypePort = new QName("http://authentication.gaards.cagrid.org/AuthenticationService/service", "AuthenticationServicePortTypePort");
     static {
         URL url = AuthenticationServiceService.class.getResource("/schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl");
         if (url == null) {

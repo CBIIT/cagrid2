@@ -1,0 +1,21 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.cagrid</groupId>
+        <artifactId>cagrid-osgi</artifactId>
+        <version>2.1.2-SNAPSHOT</version>
+    </parent>
+    <artifactId>cagrid-archetypes</artifactId>
+    <packaging>pom</packaging>
+    <name>caGrid Archetypes</name>
+
+    <modules>
+        <module>cagrid-secure-service-archetype</module>
+    </modules>
+
+    <scm>
+        <connection>scm:git:git://github.com/CBIIT/cagrid2.git/cagrid-archetypes</connection>
+        <developerConnection>scm:git:ssh://git@github.com/CBIIT/cagrid2.git/cagrid-archetypes</developerConnection>
+        <url>https://github.com/CBIIT/cagrid2/cagrid-archetypes</url>
+    </scm>
+</project>

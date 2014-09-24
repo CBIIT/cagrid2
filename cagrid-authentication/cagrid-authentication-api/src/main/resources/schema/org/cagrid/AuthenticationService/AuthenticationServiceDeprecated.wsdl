@@ -14,7 +14,7 @@
       <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata" schemaLocation="./../metadata/caGridMetadata.xsd" />
       <import namespace="http://cagrid.nci.nih.gov/1/authentication-service" schemaLocation="./authentication-service.xsd" />
       <import namespace="gme://caGrid.caBIG/1.0/gov.nih.nci.cagrid.metadata.security" schemaLocation="./../metadata/security/security.xsd" />
-      <import namespace="http://authentication.gaards.cagrid.org/AuthenticationService/types" schemaLocation="./AuthenticationServiceTypes.xsd" />
+      <import namespace="http://cagrid.nci.nih.gov/AuthenticationService/types" schemaLocation="./AuthenticationServiceTypesDeprecated.xsd" />
       <element name="AuthenticateRequest">
         <complexType>
           <sequence>
