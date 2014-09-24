@@ -18,7 +18,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Embed-Dependency>csmapi</Embed-Dependency>
+                        <Embed-Dependency>csmapi,clm</Embed-Dependency>
                         <Export-Package>
                             gov.nih.nci.security,
                             gov.nih.nci.security.authentication,
@@ -40,12 +40,12 @@
                             gov.nih.nci.security.util
                         </Export-Package>
                         <Import-Package>
-                            gov.nih.nci.logging.api.logger.hibernate;resolution:=optional,
-                            gov.nih.nci.logging.api.user;resolution:=optional,
+                            org.springframework.orm.hibernate3;resolution:=optional,
+                            org.springframework.orm.hibernate3.support;resolution:=optional,
                             junit.framework;resolution:=optional,
                             junit.textui;resolution:=optional,
                             sun.misc;resolution:=optional,
-                             *
+                            *
                         </Import-Package>
                     </instructions>
                 </configuration>
@@ -60,6 +60,14 @@
             <version>1.0</version>
             <scope>system</scope>
             <systemPath>${basedir}/lib/csmapi.jar</systemPath>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>gov.nih.nci.logging</groupId>
+            <artifactId>clm</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/clm.jar</systemPath>
             <optional>true</optional>
         </dependency>
     </dependencies>
