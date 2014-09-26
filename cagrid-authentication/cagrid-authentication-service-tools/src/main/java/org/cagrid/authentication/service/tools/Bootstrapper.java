@@ -148,7 +148,10 @@ public class Bootstrapper extends BaseCommandLine {
 		props.setProperty(GAARDS_AUTHENTICATION_CSM_APP_CONTEXT_PROPERTY, getCsmAppContext());
 		props.setProperty(GAARDS_AUTHENTICATION_SAML_CERT_PROPERTY, getSamlCert());
 		props.setProperty(GAARDS_AUTHENTICATION_SAML_KEY_PROPERTY, getSamlKey());
-		props.setProperty(GAARDS_AUTHENTICATION_SAML_KEY_PASSWORD_PROPERTY, getSamlKeyPass());
+        String samlKeyPass = getSamlKeyPass();
+        if(samlKeyPass !=null) {
+            props.setProperty(GAARDS_AUTHENTICATION_SAML_KEY_PASSWORD_PROPERTY, samlKeyPass);
+        }
 		props.setProperty(AUTHENTICATION_URL_PROPERTY, this.authenticationURL);
 		File config = new File(getServiceMixEtc(), AUTHENTICATION_SERVICE_CFG);
 		props.store(new FileOutputStream(config), "authentication Configuration saved by bootstrapper on " + new Date());
