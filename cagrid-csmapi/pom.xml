@@ -45,6 +45,8 @@
                             junit.framework;resolution:=optional,
                             junit.textui;resolution:=optional,
                             sun.misc;resolution:=optional,
+                            com.mysql;resolution:=optional,
+                            org.gjt;resolution:=optional,
                             *
                         </Import-Package>
                     </instructions>
@@ -70,5 +72,10 @@
             <systemPath>${basedir}/lib/clm.jar</systemPath>
             <optional>true</optional>
         </dependency>
+	<dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.6</version>
+	</dependency>
     </dependencies>
 </project>
