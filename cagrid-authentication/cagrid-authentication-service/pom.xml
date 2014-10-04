@@ -28,7 +28,7 @@
                         <Export-Package />
                         <Private-Package>org.cagrid.gaards.authentication.service.impl</Private-Package>
                         <Import-Package>
-                            org.apache.cxf.jaxws.spi, *
+                            org.apache.cxf.jaxws.spi, *, gov.nih.nci.security.authentication.loginmodules
                         </Import-Package>
                     </instructions>
                 </configuration>
