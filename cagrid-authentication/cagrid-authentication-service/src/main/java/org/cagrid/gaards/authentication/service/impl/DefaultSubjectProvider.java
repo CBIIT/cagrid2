@@ -48,7 +48,7 @@ public class DefaultSubjectProvider extends BasicAuthenticationSubjectProvider {
 
 				subject = mgr.authenticate(bac.getUserId(), bac.getPassword());
 			} catch (CSException ex) {
-                ex.printStackTrace();
+               // ex.printStackTrace();
 				InvalidCredentialException fault = FaultHelper
 						.createFaultException(
 								InvalidCredentialException.class, "Invalid userid or password! " + ex.getMessage());
