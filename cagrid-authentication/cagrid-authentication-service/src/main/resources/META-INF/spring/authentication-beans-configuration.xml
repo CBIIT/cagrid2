@@ -20,6 +20,8 @@
         </property>
     </bean>
 
+    <bean id="testSubjectProvider" class="org.cagrid.gaards.authentication.service.impl.TestingSubjectProvider"/>
+
     <bean id="samlProvider" class="org.cagrid.gaards.authentication.service.impl.DefaultSAMLProvider" init-method="loadCertificates">
         <property name="certificateURI" value="${gaards.authentication.saml.cert}"/>
         <property name="privateKeyURI" value="${gaards.authentication.saml.key}"/>
@@ -27,7 +29,7 @@
     </bean>
 
     <bean id="authenticationProvider" class="org.cagrid.gaards.authentication.service.impl.DefaultAuthenticationProvider">
-        <property name="subjectProvider" ref="subjectProvider"/>
+        <property name="subjectProvider" ref="${gaards.authentication.subjectprovider.beanname}"/>
         <property name="samlProvider" ref="samlProvider"/>
     </bean>
 

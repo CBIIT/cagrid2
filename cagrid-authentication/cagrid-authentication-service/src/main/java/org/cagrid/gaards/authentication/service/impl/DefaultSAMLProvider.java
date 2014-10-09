@@ -39,6 +39,7 @@ import org.cagrid.core.common.FaultHelper;
 import org.cagrid.gaards.authentication.faults.InsufficientAttributeException;
 import org.cagrid.gaards.pki.CertUtil;
 import org.cagrid.gaards.pki.KeyUtil;
+import org.cagrid.gaards.saml.encoding.SAMLUtils;
 
 /**
  * 
@@ -53,6 +54,10 @@ public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.ser
     private X509Certificate certificate;
     private PrivateKey privateKey;
     private String password;
+
+    public DefaultSAMLProvider() {
+        System.setProperty(SAMLUtils.XMLSEC_IGNORE_LINE_BREAK, Boolean.FALSE.toString());
+    }
 
     public void loadCertificates() {
         try {
@@ -210,6 +215,7 @@ public class DefaultSAMLProvider implements org.cagrid.gaards.authentication.ser
             l.add(attState);
 
             saml = new SAMLAssertion(issuer, start, end, null, null, l);
+            saml = SAMLUtils.canonicalizeSAMLAssertion(saml);
             List a = new ArrayList();
             a.add(this.certificate);
             saml.sign(XMLSignature.ALGO_ID_SIGNATURE_RSA_SHA1, this.privateKey, a);

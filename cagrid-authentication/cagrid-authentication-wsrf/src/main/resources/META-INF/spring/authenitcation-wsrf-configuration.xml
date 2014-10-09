@@ -59,10 +59,12 @@
         </constructor-arg>
     </bean>
 
+    <bean id="logOutInterceptor" class="org.apache.cxf.interceptor.LoggingOutInterceptor"/>
+    <bean id="outboundSamlCanonicalizerInterceptor" class="org.cagrid.authentication.service.wsrf.OutboundSamlCanonicalizerInterceptor"/>
 
     <bean id="authenticationWSRF" class="org.cagrid.authentication.service.wsrf.AuthenticationServiceWSRFImpl">
         <constructor-arg ref="authenticationService"/>
-        <constructor-arg ref="jaxbResourceProperties" />
+        <constructor-arg ref="jaxbResourceProperties"/>
     </bean>
 
     <bean id="registrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
@@ -98,6 +100,10 @@
         implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationService" address="${cagrid.authentication.wsrf.url}"
         wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
     >
+        <jaxws:outInterceptors>
+            <!--<ref bean="logOutInterceptor"/> -->
+            <ref bean="outboundSamlCanonicalizerInterceptor"/>
+        </jaxws:outInterceptors>
     </jaxws:endpoint>
 
     <!-- UNCOMMENT TO ADD SUPPORT FOR A LEGACY WSRF ENDPOINT -->
@@ -135,6 +141,10 @@
         implementor="#authenticationWSRF" bus="cxf" endpointName="e:AuthenticationServicePortTypePort" serviceName="s:AuthenticationService" address="${cagrid.authentication.legacy-wsrf.url}"
         wsdlLocation="schema/org/cagrid/AuthenticationService/AuthenticationService_service.wsdl"
     >
+        <jaxws:outInterceptors>
+            <!--<ref bean="logOutInterceptor"/> -->
+            <ref bean="outboundSamlCanonicalizerInterceptor"/>
+        </jaxws:outInterceptors>
     </jaxws:endpoint>
 
 </beans>

@@ -8,6 +8,7 @@
 >
 
     <osgix:cm-properties id="preProps" persistent-id="cagrid.authentication.service">
+        <prop key="gaards.authentication.subjectprovider.beanname">subjectProvider</prop>
         <prop key="gaards.authentication.csm.truststore"></prop>
         <prop key="gaards.authentication.csm.app.context">AUTHNSVC</prop>
         <prop key="gaards.authentication.saml.cert">file://${karaf.base}/etc/cagrid-authentication/cert.pem</prop>

@@ -38,7 +38,7 @@ import org.cagrid.gaards.authentication.faults.AuthenticationProviderException;
 import org.cagrid.gaards.authentication.faults.CredentialNotSupportedException;
 import org.cagrid.gaards.authentication.faults.InsufficientAttributeException;
 import org.cagrid.gaards.authentication.faults.InvalidCredentialException;
-import org.cagrid.gaards.authentication.service.SAMLAssertion;
+import org.cagrid.gaards.saml.encoding.SAMLUtils;
 import org.cagrid.gaards.security.servicesecurity.GetServiceSecurityMetadataRequest;
 import org.cagrid.gaards.security.servicesecurity.GetServiceSecurityMetadataResponse;
 import org.cagrid.wsrf.properties.InvalidResourceKeyException;
@@ -86,6 +86,7 @@ public class AuthenticationServiceWSRFImpl extends AuthenticationServicePortType
         this.logger = LoggerFactory.getLogger(getClass());
         this.authenticationService = service;
         resourceHome = getResourceHome(jaxbResourcePropertiesMap);
+        System.setProperty(SAMLUtils.XMLSEC_IGNORE_LINE_BREAK, Boolean.FALSE.toString());
     }
 
     // @Override
