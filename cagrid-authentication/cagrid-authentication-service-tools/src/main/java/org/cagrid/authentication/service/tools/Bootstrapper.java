@@ -142,10 +142,6 @@ public class Bootstrapper extends BaseCommandLine {
 		configureLegacyWSRFCredentials();
 		configureWSRFService();
 		configureAuthenticationService();
-		File srcAuthConf = new File(".." + File.separator + "cagrid-authentication-service" + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "authentication-ldap-blueprint.xml");
-		File destAuthConf = new File(authEtcDir + File.separator + "authentication-ldap-blueprint.xml");
-		FileUtils.copyFile(srcAuthConf, destAuthConf);
-
 	}
 
 	private void configureAuthenticationService() throws Exception {
