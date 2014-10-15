@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.cagrid</groupId>
         <artifactId>cagrid-authentication</artifactId>
-        <version>2.1.2-SNAPSHOT</version>
+        <version>2.1.2</version>
     </parent>
     <artifactId>cagrid-authentication-service</artifactId>
     <packaging>bundle</packaging>
