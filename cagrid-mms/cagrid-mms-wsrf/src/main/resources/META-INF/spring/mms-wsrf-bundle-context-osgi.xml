@@ -9,23 +9,14 @@
                         http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
 	<osgix:cm-properties id="preProps" persistent-id="cagrid.mms.wsrf">
-
 		<prop key="cagrid.mms.wsrf.host">localhost</prop>
 		<prop key="cagrid.mms.wsrf.port">8080</prop>
-
-		<prop key="cagrid.mms.wsrf.path">mms</prop>
-		<prop key="cagrid.mms.wsrf.url">http://${cagrid.mms.wsrf.host}:${cagrid.mms.wsrf.port}/${cagrid.mms.wsrf.path}
-		</prop>
-
-        <prop key="cagrid.mms.legacy-wsrf.url">http://${cagrid.mms.wsrf.host}:${cagrid.mms.legacy-wsrf.port}/${cagrid.mms.wsrf.path}</prop>
-        <prop key="cagrid.mms.legacy-wsrf.port">8081</prop>
+		<prop key="cagrid.mms.wsrf.path">wsrf/services/cagrid/MetadataModelService</prop>
+		<prop key="cagrid.mms.wsrf.url">http://${cagrid.mms.wsrf.host}:${cagrid.mms.wsrf.port}/${cagrid.mms.wsrf.path}</prop>
         <prop key="cagrid.mms.wsrf.registration.on">true</prop>
-        <prop key="cagrid.mms.wsrf.registration.legacy.on">true</prop>
 		<prop key="cagrid.mms.wsrf.registration.registrant.url">${cagrid.mms.wsrf.url}</prop>
-		<prop key="cagrid.mms.wsrf.registration.registrant.legacy.url">${cagrid.mms.legacy-wsrf.url}</prop>
 		<prop key="cagrid.mms.wsrf.registration.xml">${karaf.base}/etc/cagrid-mms/registration.xml</prop>
 		<prop key="cagrid.mms.wsrf.registration.index.url">http://localhost:8080/wsrf/services/DefaultIndexService</prop>
-	
 	</osgix:cm-properties>
 
 	<ctx:property-placeholder properties-ref="preProps" />

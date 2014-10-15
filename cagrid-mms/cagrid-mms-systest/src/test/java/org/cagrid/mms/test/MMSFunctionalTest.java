@@ -48,232 +48,205 @@ import org.ops4j.pax.exam.spi.reactors.AllConfinedStagedReactorFactory;
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
 public class MMSFunctionalTest extends CaGridTestSupport {
 
-	private static final String MMS_URL = "http://localhost:8080/mms";
+    private static final String MMS_URL = "http://localhost:8888/mms";
 
-	@Override
-	@Configuration
-	public Option[] config() {
-		Option[] options = new Option[] {
-				// Install MMS feature
-				new KarafDistributionConfigurationFileExtendOption(
-						"etc/org.apache.karaf.features.cfg",
-						"featuresRepositories", ","
-								+ maven().groupId("org.cagrid")
-										.artifactId("cagrid-features")
-										.versionAsInProject()
-										.classifier("features").type("xml")
-										.getURL()),
-				new KarafDistributionConfigurationFileExtendOption(
-						"etc/org.apache.karaf.features.cfg", "featuresBoot",
-						",cagrid-mms"),
+    @Override
+    @Configuration
+    public Option[] config() {
+        Option[] options = new Option[] {
+                // Install MMS feature
+                new KarafDistributionConfigurationFileExtendOption("etc/org.apache.karaf.features.cfg",
+                        "featuresRepositories", ","
+                                + maven().groupId("org.cagrid").artifactId("cagrid-features").versionAsInProject()
+                                        .classifier("features").type("xml").getURL()),
+                new KarafDistributionConfigurationFileExtendOption("etc/org.apache.karaf.features.cfg", "featuresBoot",
+                        ",cagrid-mms"),
 
-				// Get our resource files to the "etc" area
-				new KarafDistributionConfigurationFileReplacementOption(
-						"etc/cagrid.mms.wsrf.cfg", new File(
-								"src/test/resources/cagrid.mms.wsrf.cfg")),
-//				new KarafDistributionConfigurationFileReplacementOption(HOST,
-//						new File("src/test/resources/host.jks")),
-//				new KarafDistributionConfigurationFileReplacementOption(
-//						TRUSTSTORE, new File(
-//								"src/test/resources/truststore.jks")),
-				new KarafDistributionConfigurationFileReplacementOption(
-						MMSTestUtils.SERVICEMETADATA, new File(
-								"src/test/resources/serviceMetadata.xml")),
-				new KarafDistributionConfigurationFileReplacementOption(
-						MMSTestUtils.SERVICESECURITYMETADATA,
-						new File(
-								"src/test/resources/serviceSecurityMetadata.xml"))
+                // Get our resource files to the "etc" area
+                new KarafDistributionConfigurationFileReplacementOption("etc/cagrid.mms.wsrf.cfg", new File(
+                        "src/test/resources/cagrid.mms.wsrf.cfg")),
+                // new KarafDistributionConfigurationFileReplacementOption(HOST,
+                // new File("src/test/resources/host.jks")),
+                // new KarafDistributionConfigurationFileReplacementOption(
+                // TRUSTSTORE, new File(
+                // "src/test/resources/truststore.jks")),
+                new KarafDistributionConfigurationFileReplacementOption(MMSTestUtils.SERVICEMETADATA, new File(
+                        "src/test/resources/serviceMetadata.xml")),
+                new KarafDistributionConfigurationFileReplacementOption(MMSTestUtils.SERVICESECURITYMETADATA, new File(
+                        "src/test/resources/serviceSecurityMetadata.xml"))
 
-				// seeing once in a while an spurious linkage error:
-				// java.lang.LinkageError: loader constraint violation: loader
-				// (instance of <bootloader>) previously initiated loading for a
-				// different type with name "javax/xml/soap/SOAPFault"
-				// adding this to get some info:
-				// System.err.println(executeCommand("packages:exports | grep javax.xml.soap"));
-				// System.err.println(executeCommand("osgi:list"));
-				// it seems there could be a conflict between the one included
-				// with the jre and the saaj feature in
-				// servicemix, both jars have this class
-				// (javax.xml.soap.SOAPFault)
-				,
-				new KarafDistributionConfigurationFileExtendOption(
-						"etc/jre.properties", "jre-1.6",
-						",javax.xml.soap;version=\"1.3\""),
-				new KarafDistributionConfigurationFileExtendOption(
-						"etc/jre.properties", "jre-1.7",
-						",javax.xml.soap;version=\"1.3\"") };
-		return CaGridTestSupport.concatAll(super.config(), options);
-	}
-	
-	@Before
-	public void validateReady(){
-		assertBundleInstalled("cagrid-mms-api");
-		assertBundleInstalled("cagrid-mms-cadsr-impl");
-		assertBundleInstalled("cagrid-mms-service");
-		assertBundleInstalled("cagrid-mms-wsrf");
-	}
+                // seeing once in a while an spurious linkage error:
+                // java.lang.LinkageError: loader constraint violation: loader
+                // (instance of <bootloader>) previously initiated loading for a
+                // different type with name "javax/xml/soap/SOAPFault"
+                // adding this to get some info:
+                // System.err.println(executeCommand("packages:exports | grep javax.xml.soap"));
+                // System.err.println(executeCommand("osgi:list"));
+                // it seems there could be a conflict between the one included
+                // with the jre and the saaj feature in
+                // servicemix, both jars have this class
+                // (javax.xml.soap.SOAPFault)
+                ,
+                new KarafDistributionConfigurationFileExtendOption("etc/jre.properties", "jre-1.6",
+                        ",javax.xml.soap;version=\"1.3\""),
+                new KarafDistributionConfigurationFileExtendOption("etc/jre.properties", "jre-1.7",
+                        ",javax.xml.soap;version=\"1.3\"") };
+        return CaGridTestSupport.concatAll(super.config(), options);
+    }
 
-	@Test
-	public void testFunctionalMMS() {
-		try {
-			
+    @Before
+    public void validateReady() {
+        assertBundleInstalled("cagrid-mms-api");
+        assertBundleInstalled("cagrid-mms-cadsr-impl");
+        assertBundleInstalled("cagrid-mms-service");
+        assertBundleInstalled("cagrid-mms-wsrf");
+    }
 
-			MMS mmsImpl = getOsgiService(MMS.class, 30000L);
-			assertNotNull(mmsImpl);
+    @Test
+    public void testFunctionalMMS() {
+        try {
 
-			// make sure we can generate domain models and annotate metadata
-			UMLProjectIdentifer project = new UMLProjectIdentifer();
-			project.setIdentifier("caCORE 3.2");
-			project.setVersion("3.2");
+            MMS mmsImpl = getOsgiService(MMS.class, 30000L);
+            assertNotNull(mmsImpl);
 
-			System.out.println("Creating domain model for project: "
-					+ project.getIdentifier() + " (version:"
-					+ project.getVersion() + ")");
+            // make sure we can generate domain models and annotate metadata
+            UMLProjectIdentifer project = new UMLProjectIdentifer();
+            project.setIdentifier("caCORE 3.2");
+            project.setVersion("3.2");
 
-			// TEST THE MMS CADSR IMPL
-			DomainModel domainModel = null;
-			try {
-				domainModel = mmsImpl
-						.generateDomainModelForPackages(
-								project,
-								(List<String>) Arrays
-										.asList(new String[] { "gov.nih.nci.cabio.domain" }));
-				System.out.println("FOUND A DOMAIN MODEL"
-						+ domainModel.getProjectLongName());
-				for (Iterator iterator = domainModel
-						.getExposedUMLClassCollection().getUMLClass()
-						.iterator(); iterator.hasNext();) {
-					UMLClass type = (UMLClass) iterator.next();
-					System.out.println("\t" + type.getClassName());
+            System.out.println("Creating domain model for project: " + project.getIdentifier() + " (version:"
+                    + project.getVersion() + ")");
 
-				}
-			} catch (InvalidUMLProjectIndentifier e) {
-				e.printStackTrace();
-			}
+            // TEST THE MMS CADSR IMPL
+            DomainModel domainModel = null;
+            try {
+                domainModel = mmsImpl.generateDomainModelForPackages(project,
+                        (List<String>) Arrays.asList(new String[] { "gov.nih.nci.cabio.domain" }));
+                System.out.println("FOUND A DOMAIN MODEL" + domainModel.getProjectLongName());
+                for (Iterator iterator = domainModel.getExposedUMLClassCollection().getUMLClass().iterator(); iterator
+                        .hasNext();) {
+                    UMLClass type = (UMLClass) iterator.next();
+                    System.out.println("\t" + type.getClassName());
 
-			assertNotNull(domainModel);
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(ExceptionUtils.getFullStackTrace(e));
-		}
-	}
-	
-	@Test
-	public void testFunctionalMMSService() {
-		try {
+                }
+            } catch (InvalidUMLProjectIndentifier e) {
+                e.printStackTrace();
+            }
 
-			MetadataModelService mmsService = getOsgiService(
-					MetadataModelService.class, 30000L);
-			assertNotNull(mmsService);
+            assertNotNull(domainModel);
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(ExceptionUtils.getFullStackTrace(e));
+        }
+    }
 
+    @Test
+    public void testFunctionalMMSService() {
+        try {
 
-			// make sure we can generate domain models and annotate metadata
-			UMLProjectIdentifer project = new UMLProjectIdentifer();
-			project.setIdentifier("caCORE 3.2");
-			project.setVersion("3.2");
+            MetadataModelService mmsService = getOsgiService(MetadataModelService.class, 30000L);
+            assertNotNull(mmsService);
 
-			System.out.println("Creating domain model for project: "
-					+ project.getIdentifier() + " (version:"
-					+ project.getVersion() + ")");
+            // make sure we can generate domain models and annotate metadata
+            UMLProjectIdentifer project = new UMLProjectIdentifer();
+            project.setIdentifier("caCORE 3.2");
+            project.setVersion("3.2");
 
+            System.out.println("Creating domain model for project: " + project.getIdentifier() + " (version:"
+                    + project.getVersion() + ")");
 
-			// TEST THE MMS OSGI SERVICE
-			DomainModel model = null;
-			try {
-				model = mmsService.generateDomainModelForPackages(project,
-						new String[] { "gov.nih.nci.cabio.domain" });
-				System.out.println(model.getProjectLongName());
-				for (Iterator iterator = model.getExposedUMLClassCollection()
-						.getUMLClass().iterator(); iterator.hasNext();) {
-					UMLClass type = (UMLClass) iterator.next();
-					System.out.println("\t" + type.getClassName());
+            // TEST THE MMS OSGI SERVICE
+            DomainModel model = null;
+            try {
+                model = mmsService.generateDomainModelForPackages(project, new String[] { "gov.nih.nci.cabio.domain" });
+                System.out.println(model.getProjectLongName());
+                for (Iterator iterator = model.getExposedUMLClassCollection().getUMLClass().iterator(); iterator
+                        .hasNext();) {
+                    UMLClass type = (UMLClass) iterator.next();
+                    System.out.println("\t" + type.getClassName());
 
-				}
-			} catch (InvalidUMLProjectIndentifier e) {
-				e.printStackTrace();
-				fail(ExceptionUtils.getFullStackTrace(e));
-			}
+                }
+            } catch (InvalidUMLProjectIndentifier e) {
+                e.printStackTrace();
+                fail(ExceptionUtils.getFullStackTrace(e));
+            }
 
-			assertNotNull(model);
+            assertNotNull(model);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(ExceptionUtils.getFullStackTrace(e));
-		}
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(ExceptionUtils.getFullStackTrace(e));
+        }
+    }
 
-	
-	@Test
-	public void testFunctionalMMSSoap() {
-		try {
+    @Test
+    public void testFunctionalMMSSoap() {
+        try {
 
-			// get mms soap client
-			MetadataModelServicePortType mmsSoap = getMMSSoapClient();
-			assertNotNull(mmsSoap);
-			MMS mmsSoapClient = new MMSSoapClient(mmsSoap);
+            // get mms soap client
+            MetadataModelServicePortType mmsSoap = getMMSSoapClient();
+            assertNotNull(mmsSoap);
+            MMS mmsSoapClient = new MMSSoapClient(mmsSoap);
 
-			// make sure we can generate domain models and annotate metadata
-			UMLProjectIdentifer project = new UMLProjectIdentifer();
-			project.setIdentifier("caCORE 3.2");
-			project.setVersion("3.2");
+            // make sure we can generate domain models and annotate metadata
+            UMLProjectIdentifer project = new UMLProjectIdentifer();
+            project.setIdentifier("caCORE 3.2");
+            project.setVersion("3.2");
 
-			System.out.println("Creating domain model for project: "
-					+ project.getIdentifier() + " (version:"
-					+ project.getVersion() + ")");
+            System.out.println("Creating domain model for project: " + project.getIdentifier() + " (version:"
+                    + project.getVersion() + ")");
 
+            // TEST THE MMS Soap SERVICE
+            DomainModel dmodel = null;
+            try {
+                dmodel = mmsSoapClient.generateDomainModelForPackages(project,
+                        Arrays.asList(new String[] { "gov.nih.nci.cabio.domain" }));
+                System.out.println(dmodel.getProjectLongName());
+                for (Iterator iterator = dmodel.getExposedUMLClassCollection().getUMLClass().iterator(); iterator
+                        .hasNext();) {
+                    UMLClass type = (UMLClass) iterator.next();
+                    System.out.println("\t" + type.getClassName());
 
-			// TEST THE MMS Soap SERVICE
-			DomainModel dmodel = null;
-			try {
-				dmodel = mmsSoapClient.generateDomainModelForPackages(project,
-						Arrays.asList(new String[] { "gov.nih.nci.cabio.domain" }));
-				System.out.println(dmodel.getProjectLongName());
-				for (Iterator iterator = dmodel.getExposedUMLClassCollection()
-						.getUMLClass().iterator(); iterator.hasNext();) {
-					UMLClass type = (UMLClass) iterator.next();
-					System.out.println("\t" + type.getClassName());
+                }
+            } catch (InvalidUMLProjectIndentifier e) {
+                e.printStackTrace();
+                fail(ExceptionUtils.getFullStackTrace(e));
+            }
 
-				}
-			} catch (InvalidUMLProjectIndentifier e) {
-				e.printStackTrace();
-				fail(ExceptionUtils.getFullStackTrace(e));
-			}
-			
-			dmodel = null;
-			try {
-				dmodel = mmsSoapClient.generateDomainModelForClasses(project,
-						Arrays.asList(new String[] { "gov.nih.nci.cabio.domain.Agent","gov.nih.nci.cabio.domain.Clone","gov.nih.nci.cabio.domain.Cytoband" }));
-				System.out.println(dmodel.getProjectLongName());
-				assertNotNull(dmodel);
-				Assert.assertEquals(dmodel.getExposedUMLClassCollection().getUMLClass().size(), 3);
-				for (Iterator iterator = dmodel.getExposedUMLClassCollection()
-						.getUMLClass().iterator(); iterator.hasNext();) {
-					UMLClass type = (UMLClass) iterator.next();
-					System.out.println("\t" + type.getClassName());
+            dmodel = null;
+            try {
+                dmodel = mmsSoapClient.generateDomainModelForClasses(
+                        project,
+                        Arrays.asList(new String[] { "gov.nih.nci.cabio.domain.Agent",
+                                "gov.nih.nci.cabio.domain.Clone", "gov.nih.nci.cabio.domain.Cytoband" }));
+                System.out.println(dmodel.getProjectLongName());
+                assertNotNull(dmodel);
+                Assert.assertEquals(dmodel.getExposedUMLClassCollection().getUMLClass().size(), 3);
+                for (Iterator iterator = dmodel.getExposedUMLClassCollection().getUMLClass().iterator(); iterator
+                        .hasNext();) {
+                    UMLClass type = (UMLClass) iterator.next();
+                    System.out.println("\t" + type.getClassName());
 
-				}
-			} catch (InvalidUMLProjectIndentifier e) {
-				e.printStackTrace();
-				fail(ExceptionUtils.getFullStackTrace(e));
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(ExceptionUtils.getFullStackTrace(e));
-		}
-	}
+                }
+            } catch (InvalidUMLProjectIndentifier e) {
+                e.printStackTrace();
+                fail(ExceptionUtils.getFullStackTrace(e));
+            }
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail(ExceptionUtils.getFullStackTrace(e));
+        }
+    }
 
-	private MetadataModelServicePortType getMMSSoapClient()
-			throws GeneralSecurityException, IOException {
+    private MetadataModelServicePortType getMMSSoapClient() throws GeneralSecurityException, IOException {
 
-		MetadataModelServicePortType mmsPort = MMSSoapClientFactory
-				.createSoapClient(MMS_URL);
-		Client client = ClientProxy.getClient(mmsPort);
-		client.getInInterceptors().add(new LoggingInInterceptor());
-		client.getOutInterceptors().add(new LoggingOutInterceptor());
+        MetadataModelServicePortType mmsPort = MMSSoapClientFactory.createSoapClient(MMS_URL);
+        Client client = ClientProxy.getClient(mmsPort);
+        client.getInInterceptors().add(new LoggingInInterceptor());
+        client.getOutInterceptors().add(new LoggingOutInterceptor());
 
-		return mmsPort;
-	}
+        return mmsPort;
+    }
 
 }
