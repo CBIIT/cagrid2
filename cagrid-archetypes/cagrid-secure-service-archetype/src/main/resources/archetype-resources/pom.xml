@@ -7,6 +7,18 @@
     <packaging>pom</packaging>
     <version>${version}</version>
 
+    <parent>
+        <groupId>org.cagrid</groupId>
+        <artifactId>cagrid-osgi</artifactId>
+        <version>${caGridVersion}</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <wsrf.version>${caGridWSRFVersion}</wsrf.version>
+        <cagrid.version>${caGridVersion}</cagrid.version>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -15,27 +27,47 @@
                 <version>${version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.cagrid</groupId>
                 <artifactId>cagrid-metadata-model</artifactId>
-                <version>${project.version}</version>
+                <version>${cagrid.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.cagrid</groupId>
                 <artifactId>cagrid-opensaml-api</artifactId>
-                <version>${project.version}</version>
+                <version>${cagrid.version}</version>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}</groupId>
+                <groupId>org.cagrid</groupId>
                 <artifactId>cagrid-core</artifactId>
-                <version>${project.version}</version>
+                <version>${cagrid.version}</version>
             </dependency>
             <dependency>
-                <groupId>${wsrf.group}</groupId>
+                <groupId>org.cagrid</groupId>
+                <artifactId>cagrid-gaards-api</artifactId>
+                <version>${cagrid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cagrid</groupId>
+                <artifactId>cagrid-proxy-trust</artifactId>
+                <version>${cagrid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cagrid</groupId>
+                <artifactId>cagrid-service-registration-api</artifactId>
+                <version>${cagrid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cagrid</groupId>
+                <artifactId>cagrid-dorian-api</artifactId>
+                <version>${cagrid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cagrid.wsrf</groupId>
                 <artifactId>wsrf-faults-api</artifactId>
                 <version>${wsrf.version}</version>
             </dependency>
             <dependency>
-                <groupId>${wsrf.group}</groupId>
+                <groupId>org.cagrid.wsrf</groupId>
                 <artifactId>wsrf-properties-api</artifactId>
                 <version>${wsrf.version}</version>
             </dependency>
@@ -50,7 +82,7 @@
             <dependency>
                 <groupId>org.cagrid</groupId>
                 <artifactId>cagrid-features</artifactId>
-                <version>${project.version}</version>
+                <version>${cagrid.version}</version>
                 <classifier>features</classifier>
                 <type>xml</type>
             </dependency>

@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>${artifactId}</artifactId>
-	<name>caGrid GME Service Tools</name>
+	<name>caGrid ${rootArtifactId} Service Tools</name>
 
 	<dependencies>
 		<dependency>
@@ -17,43 +17,39 @@
 			<version>5.1.6</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-dorian-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-dorian-soap-client</artifactId>
-			<version>${project.version}</version>
+			<version>${cagrid.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-dorian-service</artifactId>
-			<version>${project.version}</version>
+			<version>${cagrid.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-dorian-service-tools</artifactId>
-			<version>${project.version}</version>
+			<version>${cagrid.version}</version>
 		</dependency>		
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-gaards-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-metadata-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-opensaml-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>cagrid-systest</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
@@ -128,7 +124,7 @@
 							</execution>
 						</executions>
 						<configuration>
-							<mainClass>org.cagrid.gme.service.tools.Bootstrapper</mainClass>
+							<mainClass>${package}.service.tools.Bootstrapper</mainClass>
 							<arguments></arguments>
 						</configuration>
 					</plugin>

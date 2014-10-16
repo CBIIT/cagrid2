@@ -9,27 +9,27 @@ import org.apache.cxf.configuration.Configurer;
 import org.apache.cxf.configuration.security.KeyManagersType;
 import org.apache.cxf.configuration.security.KeyStoreType;
 import org.apache.cxf.jaxws.JaxWsProxyFactoryBean;
-import ${package}.wsrf.service.GlobalModelExchangeService;
-import ${package}.wsrf.stubs.GlobalModelExchangePortType;
+import ${package}.wsrf.service.${serviceName}Service;
+import ${package}.wsrf.stubs.${serviceName}PortType;
 
 import javax.net.ssl.KeyManager;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-public class GMESoapClientFactory {
+public class ${serviceName}SoapClientFactory {
 
-    public static GlobalModelExchangePortType createSoapClient(String url) {
+    public static ${serviceName}PortType createSoapClient(String url) {
         SpringBusFactory bf = new SpringBusFactory();
         Bus bus = bf.createBus();
         JaxWsProxyFactoryBean cf = new JaxWsProxyFactoryBean();
         cf.setAddress(url);
-        cf.setServiceClass(GlobalModelExchangeService.class);
+        cf.setServiceClass(${serviceName}Service.class);
         cf.setBus(bus);
-        GlobalModelExchangePortType gmePort = cf.create(GlobalModelExchangePortType.class);
-        return gmePort;
+        ${serviceName}PortType port = cf.create(${serviceName}PortType.class);
+        return port;
     }
 
-    public static GlobalModelExchangePortType createSoapClient(String url, KeyStoreType truststore, KeyManagersType keyManager) throws GeneralSecurityException, IOException {
+    public static ${serviceName}PortType createSoapClient(String url, KeyStoreType truststore, KeyManagersType keyManager) throws GeneralSecurityException, IOException {
         SpringBusFactory bf = new SpringBusFactory();
         Bus bus = bf.createBus();
         Configurer baseConf = bus.getExtension(Configurer.class);
@@ -40,13 +40,13 @@ public class GMESoapClientFactory {
 
         JaxWsProxyFactoryBean cf = new JaxWsProxyFactoryBean();
         cf.setAddress(url);
-        cf.setServiceClass(GlobalModelExchangeService.class);
+        cf.setServiceClass(${serviceName}Service.class);
         cf.setBus(bus);
-        GlobalModelExchangePortType gmePort = cf.create(GlobalModelExchangePortType.class);
-        return gmePort;
+        ${serviceName}PortType port = cf.create(${serviceName}PortType.class);
+        return port;
     }
 
-    public static GlobalModelExchangePortType createSoapClient(String url, KeyStoreType truststore, KeyManager keyManager) throws GeneralSecurityException, IOException {
+    public static ${serviceName}PortType createSoapClient(String url, KeyStoreType truststore, KeyManager keyManager) throws GeneralSecurityException, IOException {
         SpringBusFactory bf = new SpringBusFactory();
         Bus bus = bf.createBus();
         Configurer baseConf = bus.getExtension(Configurer.class);
@@ -57,10 +57,10 @@ public class GMESoapClientFactory {
 
         JaxWsProxyFactoryBean cf = new JaxWsProxyFactoryBean();
         cf.setAddress(url);
-        cf.setServiceClass(GlobalModelExchangeService.class);
+        cf.setServiceClass(${serviceName}Service.class);
         cf.setBus(bus);
-        GlobalModelExchangePortType gmePort = cf.create(GlobalModelExchangePortType.class);
-        return gmePort;
+        ${serviceName}PortType port = cf.create(${serviceName}PortType.class);
+        return port;
     }
 
 

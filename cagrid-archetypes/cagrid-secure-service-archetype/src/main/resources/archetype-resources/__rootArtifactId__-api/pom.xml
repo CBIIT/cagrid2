@@ -11,7 +11,8 @@
 	<name>${rootArtifactId} API</name>
 
 	<properties>
-		<${artifactId}.wsdl.path>schema/org/cagrid/gme/GlobalModelExchange_service.wsdl</${artifactId}.wsdl.path>
+        <!-- TODO: edit this -->
+		<${artifactId}.wsdl.path>schema/${serviceName}_service.wsdl</${artifactId}.wsdl.path>
 	</properties>
 
 	<profiles>
@@ -37,13 +38,13 @@
 												<extraarg>-impl</extraarg>
 												<extraarg>-client</extraarg>
                                                 <extraarg>-p</extraarg>
-                                                <extraarg>http://gme.cagrid.org/GlobalModelExchange/service=org.cagrid.gme.wsrf.service</extraarg>
+                                                <extraarg>${serviceNamespace}/service=${package}.wsrf.service</extraarg>
                                                 <extraarg>-p</extraarg>
-                                                <extraarg>http://gme.cagrid.org/GlobalModelExchange=org.cagrid.gme.wsrf.stubs</extraarg>
+                                                <extraarg>${serviceNamespace}=${package}.wsrf.stubs</extraarg>
                                                 <extraarg>-p</extraarg>
-                                                <extraarg>http://gme.cagrid.org/GlobalModelExchange/types=org.cagrid.gme.types</extraarg>
+                                                <extraarg>${serviceNamespace}/types=${package}.types</extraarg>
                                                 <extraarg>-p</extraarg>
-                                                <extraarg>gme://gme.cagrid.org/2.0/GlobalModelExchange/domain=org.cagrid.gme.model</extraarg>
+                                                <extraarg>${serviceNamespace}/domain=${package}.model</extraarg>
                                                 <!-- Exclusions -->
 												<extraarg>-nexclude</extraarg>
 												<extraarg>http://authentication.gaards.cagrid.org/AuthenticationService=org.cagrid.gaards.authentication</extraarg>
@@ -157,7 +158,7 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>${wsrf.group}</groupId>
+									<groupId>org.cagrid.wsrf</groupId>
 									<artifactId>ws-model</artifactId>
 									<version>${wsrf.version}</version>
 									<overWrite>true</overWrite>
@@ -165,7 +166,7 @@
 									<includes>schema/**/*.xsd</includes>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${wsrf.group}</groupId>
+									<groupId>org.cagrid.wsrf</groupId>
 									<artifactId>wsrf-faults-api</artifactId>
 									<version>${wsrf.version}</version>
 									<overWrite>true</overWrite>
@@ -173,7 +174,7 @@
 									<includes>schema/**/*.xsd,schema/**/*.wsdl</includes>
 								</artifactItem>
                                 <artifactItem>
-                                    <groupId>${wsrf.group}</groupId>
+                                    <groupId>org.cagrid.wsrf</groupId>
                                     <artifactId>wsrf-notification-api</artifactId>
                                     <version>${wsrf.version}</version>
                                     <overWrite>true</overWrite>
@@ -181,7 +182,7 @@
                                     <includes>schema/**/*.xsd,schema/**/*.wsdl</includes>
                                 </artifactItem>
 								<artifactItem>
-									<groupId>${wsrf.group}</groupId>
+									<groupId>org.cagrid.wsrf</groupId>
 									<artifactId>wsrf-properties-api</artifactId>
 									<version>${wsrf.version}</version>
 									<overWrite>true</overWrite>
@@ -189,17 +190,17 @@
 									<includes>schema/**/*.xsd,schema/**/*.wsdl</includes>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.cagrid</groupId>
 									<artifactId>cagrid-metadata-model</artifactId>
-									<version>${project.version}</version>
+									<version>${cagrid.version}</version>
 									<overWrite>true</overWrite>
 									<outputDirectory>work</outputDirectory>
 									<includes>schema/**/*.xsd,schema/**/*.wsdl</includes>
 								</artifactItem>
 								<artifactItem>
-									<groupId>${project.groupId}</groupId>
+									<groupId>org.cagrid</groupId>
 									<artifactId>cagrid-gaards-api</artifactId>
-									<version>${project.version}</version>
+									<version>${cagrid.version}</version>
 									<overWrite>true</overWrite>
 									<outputDirectory>work</outputDirectory>
 									<includes>schema/**/*.xsd,schema/**/*.wsdl</includes>
@@ -216,14 +217,14 @@
 				<configuration>
 					<instructions>
 						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Export-Package>schema.org.cagrid.gme,
-							org.cagrid.gme,
-                            org.cagrid.gme.service,
-                            org.cagrid.gme.service.exception,
-                            org.cagrid.gme.model,
-                            org.cagrid.gme.types,
-                            org.cagrid.gme.wsrf.service,
-                            org.cagrid.gme.wsrf.stubs</Export-Package>
+						<Export-Package>schema.${package},
+							${package},
+                            ${package}.service,
+                            ${package}.service.exception,
+                            ${package}.model,
+                            ${package}.types,
+                            ${package}.wsrf.service,
+                            ${package}.wsrf.stubs</Export-Package>
 						<Import-Package>*</Import-Package>
 					</instructions>
 				</configuration>
@@ -233,48 +234,36 @@
 
 	<dependencies>
         <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>com.springsource.javax.persistence</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>com.springsource.org.hibernate.annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.cagrid</groupId>
             <artifactId>cagrid-gaards-api</artifactId>
         </dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-metadata-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${project.groupId}</groupId>
+			<groupId>org.cagrid</groupId>
 			<artifactId>cagrid-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${wsrf.group}</groupId>
+			<groupId>org.cagrid.wsrf</groupId>
 			<artifactId>ws-model</artifactId>
 		</dependency>
         <dependency>
-            <groupId>${wsrf.group}</groupId>
+            <groupId>org.cagrid.wsrf</groupId>
             <artifactId>wsrf-lifetime-api</artifactId>
         </dependency>
 		<dependency>
-			<groupId>${wsrf.group}</groupId>
+			<groupId>org.cagrid.wsrf</groupId>
 			<artifactId>wsrf-faults-api</artifactId>
 		</dependency>
         <dependency>
-            <groupId>${wsrf.group}</groupId>
+            <groupId>org.cagrid.wsrf</groupId>
             <artifactId>wsrf-notification-api</artifactId>
         </dependency>
 		<dependency>
-			<groupId>${wsrf.group}</groupId>
+			<groupId>org.cagrid.wsrf</groupId>
 			<artifactId>wsrf-properties-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>

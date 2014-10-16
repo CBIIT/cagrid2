@@ -19,6 +19,6 @@
 
 	<ctx:property-placeholder properties-ref="preProps" />
 
-	<osgi:service ref="gmeService" interface="${package}.service.GlobalModelExchangeService" context-class-loader="service-provider"/>
+	<osgi:service ref="${serviceName}Service" interface="${package}.service.${serviceName}Service" context-class-loader="service-provider"/>
 
 </beans>

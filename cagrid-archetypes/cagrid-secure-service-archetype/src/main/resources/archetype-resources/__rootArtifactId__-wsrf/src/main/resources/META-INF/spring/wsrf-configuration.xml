@@ -1,0 +1,137 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:cxf="http://cxf.apache.org/core"
+	xmlns:wsa="http://cxf.apache.org/ws/addressing" xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:sec="http://cxf.apache.org/configuration/security" xmlns:http="http://cxf.apache.org/transports/http/configuration"
+	xmlns:httpj="http://cxf.apache.org/transports/http-jetty/configuration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+                        http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
+	                    http://cxf.apache.org/configuration/security http://cxf.apache.org/schemas/configuration/security.xsd
+	                    http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd
+	                    http://cxf.apache.org/transports/http-jetty/configuration http://cxf.apache.org/schemas/configuration/http-jetty.xsd
+                        http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+
+	<bean id="defaultPropertiesPlaceholder"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location"
+			value="classpath:META-INF/spring/${rootArtifactId}-wsrf.properties" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+	<bean id="registrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
+		<constructor-arg index="0" value="${symbol_dollar}{${package}.wsrf.registration.on}"></constructor-arg>
+		<constructor-arg index="1" value="${symbol_dollar}{${package}.wsrf.registration.xml}"></constructor-arg>
+		<constructor-arg index="2" value="${symbol_dollar}{${package}.wsrf.registration.registrant.url}"></constructor-arg>
+		<constructor-arg index="3" value="${symbol_dollar}{${package}.wsrf.registration.index.url}"></constructor-arg>
+	</bean>
+	
+	<bean id="legacyregistrator" class="org.cagrid.serviceregistration.ServiceGroupRegistrator" destroy-method="terminate">
+		<constructor-arg index="0" value="${symbol_dollar}{${package}.wsrf.registration.legacy.on}"></constructor-arg>
+		<constructor-arg index="1" value="${symbol_dollar}{${package}.wsrf.registration.xml}"></constructor-arg>
+		<constructor-arg index="2" value="${symbol_dollar}{${package}.wsrf.registration.registrant.legacy.url}"></constructor-arg>
+		<constructor-arg index="3" value="${symbol_dollar}{${package}.wsrf.registration.index.url}"></constructor-arg>
+	</bean>
+	
+	<bean id="proxySslContextFactory"
+		class="${groupId}.security.ssl.proxy.trust.JettySslContextFactory">
+		<property name="keyStorePath" value="${symbol_dollar}{${package}.wsrf.keystore.path}" />
+		<property name="keyStorePassword" value="${symbol_dollar}{${package}.wsrf.keystore.password}" />
+		<property name="keyManagerPassword" value="${symbol_dollar}{${package}.wsrf.key.password}" />
+		<property name="trustStore" value="${symbol_dollar}{${package}.wsrf.truststore.path}" />
+		<property name="trustStorePassword" value="${symbol_dollar}{${package}.wsrf.truststore.password}" />
+		<property name="wantClientAuth" value="true" />
+		<property name="needClientAuth" value="false" />
+		<property name="includeCipherSuites" value="${symbol_dollar}{${package}.wsrf.cipher-suites}" />
+	</bean>
+
+    <bean id="trustServiceSSLContextFactory" class="org.cagrid.trust.service.TrustServiceJettySSLContextFactory ">
+        <property name="trustService" ref="trustService"/>
+        <property name="keyStorePath" value="${symbol_dollar}{${package}.wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${symbol_dollar}{${package}.wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${symbol_dollar}{${package}.wsrf.key.password}"/>
+        <property name="wantClientAuth" value="true"/>
+        <property name="needClientAuth" value="false"/>
+        <property name="includeCipherSuites" value="${symbol_dollar}{${package}.wsrf.cipher-suites}"/>
+    </bean>
+
+    <bean id="legacyProxySslContextFactory"
+          class="${groupId}.security.ssl.proxy.trust.JettySslContextFactory">
+        <property name="keyStorePath" value="${symbol_dollar}{${package}.legacy-wsrf.keystore.path}" />
+        <property name="keyStorePassword" value="${symbol_dollar}{${package}.legacy-wsrf.keystore.password}" />
+        <property name="keyManagerPassword" value="${symbol_dollar}{${package}.legacy-wsrf.key.password}" />
+        <property name="trustStore" value="${symbol_dollar}{${package}.legacy-wsrf.truststore.path}" />
+        <property name="trustStorePassword" value="${symbol_dollar}{${package}.legacy-wsrf.truststore.password}" />
+        <property name="wantClientAuth" value="true" />
+        <property name="needClientAuth" value="false" />
+        <property name="includeCipherSuites" value="${symbol_dollar}{${package}.wsrf.cipher-suites}" />
+    </bean>
+
+    <bean id="legacyTrustServiceSSLContextFactory" class="org.cagrid.trust.service.TrustServiceJettySSLContextFactory ">
+        <property name="trustService" ref="trustService"/>
+        <property name="keyStorePath" value="${symbol_dollar}{${package}.legacy-wsrf.keystore.path}"/>
+        <property name="keyStorePassword" value="${symbol_dollar}{${package}.legacy-wsrf.keystore.password}"/>
+        <property name="keyManagerPassword" value="${symbol_dollar}{${package}.legacy-wsrf.key.password}"/>
+        <property name="wantClientAuth" value="true"/>
+        <property name="needClientAuth" value="false"/>
+        <property name="includeCipherSuites" value="${symbol_dollar}{${package}.wsrf.cipher-suites}"/>
+    </bean>
+
+<!-- Cannot use SslSelectChannelConnector yet, see https://issues.apache.org/jira/browse/CXF-4806 -->
+	<httpj:engine-factory bus="cxf">
+		<httpj:engine port="${symbol_dollar}{${package}.wsrf.port}">
+			<httpj:tlsServerParameters />
+			<httpj:connector>
+				<bean class="org.eclipse.jetty.server.ssl.SslSocketConnector">
+					<constructor-arg index="0" ref="${symbol_dollar}{${package}.wsrf.ssl.context.factory.bean}" />
+					<property name="port" value="${symbol_dollar}{${package}.wsrf.port}" />
+				</bean>
+			</httpj:connector>
+		</httpj:engine>
+
+        <httpj:engine port="${symbol_dollar}{${package}.legacy-wsrf.port}">
+            <httpj:tlsServerParameters />
+            <httpj:connector>
+                <bean class="org.eclipse.jetty.server.ssl.SslSocketConnector">
+                    <constructor-arg index="0" ref="${symbol_dollar}{${package}.legacy-wsrf.ssl.context.factory.bean}" />
+                    <property name="port" value="${symbol_dollar}{${package}.legacy-wsrf.port}" />
+                </bean>
+            </httpj:connector>
+        </httpj:engine>
+	</httpj:engine-factory>
+
+	<bean id="jaxbProvider" class="org.apache.cxf.jaxrs.provider.JAXBElementProvider">
+		<property name="marshallerProperties" ref="propertiesMap" />
+	</bean>
+	<util:map id="propertiesMap">
+		<entry key="jaxb.formatted.output">
+			<value type="java.lang.Boolean">true</value>
+		</entry>
+	</util:map>
+
+	<bean id="${serviceName}WSRF" class="${package}.service.wsrf.${serviceName}WSRFImpl">
+		<constructor-arg index="0" ref="${serviceName}Service" />
+	</bean>
+
+    <!-- TODO: you may need to edit these endpoints per your WSDL -->
+	<jaxws:endpoint xmlns:e="${serviceNamespace}/service"
+		xmlns:s="${serviceNamespace}/service" id="${serviceName}WSRFEP"
+		implementor="${symbol_pound}${rootArtifactId}WSRF" bus="cxf" endpointName="e:${serviceName}PortTypePort"
+		serviceName="s:${serviceName}Service" address="${symbol_dollar}{${package}.wsrf.url}"
+		wsdlLocation="schema/${packageInPathFormat}/${serviceName}_service.wsdl">
+	</jaxws:endpoint>
+
+    <jaxws:endpoint xmlns:e="${serviceNamespace}/service"
+                    xmlns:s="${serviceNamespace}/service" id="legacy${serviceName}WSRFEP"
+                    implementor="${symbol_pound}${serviceName}WSRF" bus="cxf" endpointName="e:${serviceName}PortTypePort"
+                    serviceName="s:${serviceName}Service" address="${symbol_dollar}{${package}.legacy-wsrf.url}"
+                    wsdlLocation="schema/${packageInPathFormat}/${serviceName}_service.wsdl">
+    </jaxws:endpoint>
+</beans>

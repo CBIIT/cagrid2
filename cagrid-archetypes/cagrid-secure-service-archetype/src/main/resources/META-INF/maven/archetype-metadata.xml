@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <archetype-descriptor xsi:schemaLocation="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0 http://maven.apache.org/xsd/archetype-descriptor-1.0.0.xsd"
-    name="cagrid-gme" xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    name="cagrid-cagrid-secure-service-archetype" xmlns="http://maven.apache.org/plugins/maven-archetype-plugin/archetype-descriptor/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 >
     <requiredProperties>
         <requiredProperty key="caGridWSRFVersion">
@@ -9,6 +9,13 @@
         <requiredProperty key="caGridVersion">
             <defaultValue>2.1.2</defaultValue>
         </requiredProperty>
+        <requiredProperty key="serviceNamespace">
+            <defaultValue>http://gme.cagrid.org/2.0/GlobalModelExchange</defaultValue>
+        </requiredProperty>
+        <requiredProperty key="serviceName">
+            <defaultValue>GlobalModelExchange</defaultValue>
+        </requiredProperty>
+
     </requiredProperties>
     <modules>
         <module id="${rootArtifactId}-api" dir="__rootArtifactId__-api" name="${rootArtifactId}-api">

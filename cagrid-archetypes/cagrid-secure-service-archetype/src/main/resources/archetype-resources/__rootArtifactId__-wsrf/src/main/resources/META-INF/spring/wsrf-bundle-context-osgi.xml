@@ -1,0 +1,55 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ctx="http://www.springframework.org/schema/context" xmlns:osgi="http://www.springframework.org/schema/osgi"
+	xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+                        http://www.springframework.org/schema/osgi-compendium http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
+
+	<osgix:cm-properties id="preProps" persistent-id="${package}.wsrf">
+
+		<prop key="${package}.wsrf.host">localhost</prop>
+		<prop key="${package}.wsrf.port">7742</prop>
+		<prop key="${package}.wsrf.path">${rootArtifactId}</prop>
+		<prop key="${package}.wsrf.url">https://${symbol_dollar}{${package}.wsrf.host}:${symbol_dollar}{${package}.wsrf.port}/${symbol_dollar}{${package}.wsrf.path}</prop>
+		<prop key="${package}.wsrf.keystore.path">${symbol_dollar}{karaf.base}/etc/${parentArtifactId}/host.jks</prop>
+		<prop key="${package}.wsrf.keystore.password">changeit</prop>
+		<prop key="${package}.wsrf.keystore.alias">host</prop>
+		<prop key="${package}.wsrf.key.password">changeit</prop>
+		<prop key="${package}.wsrf.truststore.path">${symbol_dollar}{karaf.base}/etc/${parentArtifactId}/truststore.jks</prop>
+		<prop key="${package}.wsrf.truststore.password">changeit</prop>
+		<prop key="${package}.wsrf.cipher-suites">SSL_RSA_WITH_RC4_128_MD5,SSL_RSA_WITH_RC4_128_SHA,TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+			TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_DHE_DSS_WITH_AES_256_CBC_SHA,SSL_RSA_WITH_3DES_EDE_CBC_SHA,
+			SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA,SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA,SSL_RSA_WITH_DES_CBC_SHA,SSL_DHE_RSA_WITH_DES_CBC_SHA,
+			SSL_DHE_DSS_WITH_DES_CBC_SHA,SSL_RSA_EXPORT_WITH_RC4_40_MD5,SSL_RSA_EXPORT_WITH_DES40_CBC_SHA,SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA,
+			SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA,TLS_EMPTY_RENEGOTIATION_INFO_SCSV,SSL_RSA_WITH_NULL_MD5
+		</prop>
+
+        <prop key="${package}.legacy-wsrf.url">https://${symbol_dollar}{${package}.wsrf.host}:${symbol_dollar}{${package}.legacy-wsrf.port}/${symbol_dollar}{${package}.wsrf.path}</prop>
+        <prop key="${package}.legacy-wsrf.port">7743</prop>
+        <prop key="${package}.legacy-wsrf.keystore.path">${symbol_dollar}{karaf.base}/etc/${parentArtifactId}/legacy-host.jks</prop>
+        <prop key="${package}.legacy-wsrf.keystore.password">changeit</prop>
+        <prop key="${package}.legacy-wsrf.keystore.alias">host</prop>
+        <prop key="${package}.legacy-wsrf.key.password">changeit</prop>
+        <prop key="${package}.legacy-wsrf.truststore.path">${symbol_dollar}{karaf.base}/etc/${parentArtifactId}/truststore.jks</prop>
+        <prop key="${package}.legacy-wsrf.truststore.password">changeit</prop>
+        <prop key="${package}.wsrf.registration.on">true</prop>
+        <prop key="${package}.wsrf.registration.legacy.on">true</prop>
+		<prop key="${package}.wsrf.registration.registrant.url">${symbol_dollar}{${package}.wsrf.url}</prop>
+		<prop key="${package}.wsrf.registration.registrant.legacy.url">${symbol_dollar}{${package}.legacy-wsrf.url}</prop>
+		<prop key="${package}.wsrf.registration.xml">${symbol_dollar}{karaf.base}/etc/${parentArtifactId}/registration.xml</prop>
+		<prop key="${package}.wsrf.registration.index.url">http://index.training.cagrid.org:8080/wsrf/services/DefaultIndexService</prop>
+        <prop key="${package}.wsrf.ssl.context.factory.bean">proxySslContextFactory</prop>
+        <prop key="${package}.legacy-wsrf.ssl.context.factory.bean">legacyProxySslContextFactory</prop>
+	</osgix:cm-properties>
+
+	<ctx:property-placeholder properties-ref="preProps" />
+
+	<osgi:reference id="${rootArtifactId}Service" cardinality="0..1" interface="${package}.service.${rootArtifactId}Service" />
+    <osgi:reference id="trustService" cardinality="0..1" interface="org.cagrid.trust.service.TrustService"/>
+</beans>

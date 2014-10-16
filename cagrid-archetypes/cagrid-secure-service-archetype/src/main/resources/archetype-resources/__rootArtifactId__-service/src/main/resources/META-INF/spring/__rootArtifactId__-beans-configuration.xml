@@ -14,7 +14,7 @@
 
 	<bean id="defaultPropertiesPlaceholder"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:META-INF/spring/gme.properties" />
+		<property name="location" value="classpath:META-INF/spring/${rootArtifactId}.properties" />
 		<property name="ignoreResourceNotFound" value="true" />
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
 	</bean>
@@ -29,12 +29,7 @@
 	</bean>
 
 
-    <bean id="gme" class="${package}.service.impl.GME">
-        <property name="XMLSchemaInformationDao" ref="xmlSchemaInformationDao" />
-    </bean>
-
-    <bean id="gmeService" class="${package}.service.impl.GMEImpl" init-method="initialize">
-        <constructor-arg ref="gme"/>
+    <bean id="${serviceName}Service" class="${package}.service.impl.${serviceName}Impl" init-method="initialize">
         <constructor-arg ref="jaxbResourceProperties" />
     </bean>
 </beans>

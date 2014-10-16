@@ -47,86 +47,81 @@ import org.springframework.core.io.FileSystemResource;
 public class Bootstrapper extends BaseCommandLine {
 
 	private static final String PROPERTIES_FILE = "src/main/resources/bootstrapper.properties";
-	private static final String GME_SERVICE_DIR = "${parentArtifactId}";
-	private static final String GME_SERVICE_CFG = "cagrid.gme.service.cfg";
-	private static final String GME_WSRF_CFG = "cagrid.gme.wsrf.cfg";
+	private static final String SERVICE_DIR = "${parentArtifactId}";
+	private static final String SERVICE_CFG = "${package}.service.cfg";
+	private static final String WSRF_CFG = "${package}.wsrf.cfg";
 
 	public static final String CONFIGURE_LEGACY_WSRF_PROMPT = "Do you want to configure a Legacy WSRF Endpoint (true|false)";
-	public static final String CONFIGURE_LEGACY_WSRF_PROPERTY = "cagrid.gme.configure.legacy.wsrf";
+	public static final String CONFIGURE_LEGACY_WSRF_PROPERTY = "${package}.configure.legacy.wsrf";
 
 	private static final String TRUSTSTORE_FILE_NAME = "truststore.jks";
 
 	public static final String ADMIN_USER_ID_PROMPT = "Please enter the user id of admin";
 	public static final String ADMIN_USER_ID_PROPERTY = "${groupId}.dorian.admin.user.id";
 
-	private static final String WSRF_CERTIFICATE_SOURCE = "cagrid.gme.wsrf.cert.source";
+	private static final String WSRF_CERTIFICATE_SOURCE = "${package}.wsrf.cert.source";
 	
 	private static final String DORIAN_CONFIG_PROMPT = "Please enter classpath location of Dorian configuration file";
-	private static final String DORIAN_CONFIG_PROPERTY = "cagrid.gme.dorian.config";
+	private static final String DORIAN_CONFIG_PROPERTY = "${package}.dorian.config";
 	private static final String DORIAN_PROPERTIES_PROMPT = "Please enter location of Dorian property file";
-	private static final String DORIAN_PROPERTIES_PROPERTY = "cagrid.gme.dorian.properties";
+	private static final String DORIAN_PROPERTIES_PROPERTY = "${package}.dorian.properties";
 
     private static final String WSRF_INDEXSVC_PROMPT = "Please enter index service endpoint";
-    private static final String WSRF_INDEXSVC_PROPERTY = "cagrid.gme.wsrf.registration.index.url";
+    private static final String WSRF_INDEXSVC_PROPERTY = "${package}.wsrf.registration.index.url";
 	private static final String WSRF_HOSTNAME_PROMPT = "Please enter a hostname for the WSRF endpoint";
-	private static final String WSRF_HOSTNAME_PROPERTY = "cagrid.gme.wsrf.host";
+	private static final String WSRF_HOSTNAME_PROPERTY = "${package}.wsrf.host";
 	public static final String WSRF_PORT_PROMPT = "Enter a port number for the WSRF service";
-	public static final String WSRF_PORT_PROPERTY = "cagrid.gme.wsrf.port";
-	public static final String WSRF_URL_PROPERTY = "cagrid.gme.wsrf.url";
+	public static final String WSRF_PORT_PROPERTY = "${package}.wsrf.port";
+	public static final String WSRF_URL_PROPERTY = "${package}.wsrf.url";
 	private static final String WSRF_URL_PATH_PROMPT = "Please enter the url path of the WSRF endpoint";
-	private static final String WSRF_URL_PATH_PROPERTY = "cagrid.gme.wsrf.url.path";
+	private static final String WSRF_URL_PATH_PROPERTY = "${package}.wsrf.url.path";
 	private static final String WSRF_CERTIFICATE_PROMPT = "Please enter the location of the WSRF endpoint host certificate";
-	private static final String WSRF_CERTIFICATE_PROPERTY = "cagrid.gme.certificate.location";
+	private static final String WSRF_CERTIFICATE_PROPERTY = "${package}.certificate.location";
 	private static final String WSRF_KEY_PROMPT = "Please enter the location of the WSRF endpoint private key";
-	private static final String WSRF_KEY_PROPERTY = "cagrid.gme.key.location";
+	private static final String WSRF_KEY_PROPERTY = "${package}.key.location";
 	private static final String WSRF_KEYSTORE_ALIAS_PROMPT = "Please enter a alias for the WSRF keystore";
-	private static final String WSRF_KEYSTORE_ALIAS_PROPERTY = "cagrid.gme.wsrf.keystore.alias";
+	private static final String WSRF_KEYSTORE_ALIAS_PROPERTY = "${package}.wsrf.keystore.alias";
 	private static final String WSRF_KEYSTORE_PASSWORD_PROMPT = "Please enter a password for the WSRF keystore";
-	private static final String WSRF_KEYSTORE_PASSWORD_PROPERTY = "cagrid.gme.wsrf.keystore.password";
+	private static final String WSRF_KEYSTORE_PASSWORD_PROPERTY = "${package}.wsrf.keystore.password";
 	private static final String WSRF_KEY_PASSWORD_PROMPT = "Please enter a password for the WSRF private key";
-	private static final String WSRF_KEY_PASSWORD_PROPERTY = "cagrid.gme.wsrf.key.password";
-	private static final String WSRF_KEYSTORE_FILE_NAME = "grid-gme-host.jks";
-	private static final String WSRF_KEYSTORE_PATH_PROPERTY = "cagrid.gme.wsrf.keystore.path";
-	private static final String WSRF_KEYSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + GME_SERVICE_DIR + "/" + WSRF_KEYSTORE_FILE_NAME;
-	private static final String WSRF_TRUSTSTORE_PATH_PROPERTY = "cagrid.gme.wsrf.truststore.path";
-	private static final String WSRF_TRUSTSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + GME_SERVICE_DIR + "/" + TRUSTSTORE_FILE_NAME;
+	private static final String WSRF_KEY_PASSWORD_PROPERTY = "${package}.wsrf.key.password";
+	private static final String WSRF_KEYSTORE_FILE_NAME = "host.jks";
+	private static final String WSRF_KEYSTORE_PATH_PROPERTY = "${package}.wsrf.keystore.path";
+	private static final String WSRF_KEYSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + SERVICE_DIR + "/" + WSRF_KEYSTORE_FILE_NAME;
+	private static final String WSRF_TRUSTSTORE_PATH_PROPERTY = "${package}.wsrf.truststore.path";
+	private static final String WSRF_TRUSTSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + SERVICE_DIR + "/" + TRUSTSTORE_FILE_NAME;
 	private static final String WSRF_TRUSTSTORE_PASSWORD_PROMPT = "Please enter a password for the WSRF truststore";
-	private static final String WSRF_TRUSTSTORE_PASSWORD_PROPERTY = "cagrid.gme.wsrf.truststore.password";
+	private static final String WSRF_TRUSTSTORE_PASSWORD_PROPERTY = "${package}.wsrf.truststore.password";
 
 	private static final String LEGACY_WSRF_HOSTNAME_PROMPT = "Please enter a legacy hostname";
-	private static final String LEGACY_WSRF_HOSTNAME_PROPERTY = "cagrid.gme.legacy-wsrf.host";
+	private static final String LEGACY_WSRF_HOSTNAME_PROPERTY = "${package}.legacy-wsrf.host";
 	private static final String LEGACY_WSRF_URL_PATH_PROMPT = "Please enter the url path of the legacy WSRF endpoint";
-	private static final String LEGACY_WSRF_URL_PATH_PROPERTY = "cagrid.gme.legacy-wsrf.url.path";
+	private static final String LEGACY_WSRF_URL_PATH_PROPERTY = "${package}.legacy-wsrf.url.path";
 	private static final String LEGACY_WSRF_CERTIFICATE_PROMPT = "Please enter the location of the legacy host certificate";
-	private static final String LEGACY_WSRF_CERTIFICATE_PROPERTY = "cagrid.gme.legacy-certificate.location";
+	private static final String LEGACY_WSRF_CERTIFICATE_PROPERTY = "${package}.legacy-certificate.location";
 	private static final String LEGACY_WSRF_KEY_PROMPT = "Please enter the location of the legacy private key";
-	private static final String LEGACY_WSRF_KEY_PROPERTY = "cagrid.gme.legacy-key.location";
+	private static final String LEGACY_WSRF_KEY_PROPERTY = "${package}.legacy-key.location";
 	private static final String LEGACY_WSRF_KEYSTORE_ALIAS_PROMPT = "Please enter a alias for the legacy keystore";
-	private static final String LEGACY_WSRF_KEYSTORE_ALIAS_PROPERTY = "cagrid.gme.legacy-wsrf.keystore.alias";
+	private static final String LEGACY_WSRF_KEYSTORE_ALIAS_PROPERTY = "${package}.legacy-wsrf.keystore.alias";
 	private static final String LEGACY_WSRF_KEYSTORE_PASSWORD_PROMPT = "Please enter a password for the legacy keystore";
-	private static final String LEGACY_WSRF_KEYSTORE_PASSWORD_PROPERTY = "cagrid.gme.legacy-wsrf.keystore.password";
+	private static final String LEGACY_WSRF_KEYSTORE_PASSWORD_PROPERTY = "${package}.legacy-wsrf.keystore.password";
 	private static final String LEGACY_WSRF_KEY_PASSWORD_PROMPT = "Please enter a password for the legacy private key";
-	private static final String LEGACY_WSRF_KEY_PASSWORD_PROPERTY = "cagrid.gme.legacy-wsrf.key.password";
-	private static final String LEGACY_WSRF_KEYSTORE_FILE_NAME = "legacy-grid-gme-host.jks";
-	private static final String LEGACY_WSRF_KEYSTORE_PATH_PROPERTY = "cagrid.gme.legacy-wsrf.keystore.path";
-	private static final String LEGACY_WSRF_KEYSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + GME_SERVICE_DIR + "/" + LEGACY_WSRF_KEYSTORE_FILE_NAME;
-	private static final String LEGACY_WSRF_TRUSTSTORE_PATH_PROPERTY = "cagrid.gme.legacy-wsrf.truststore.path";
-	private static final String LEGACY_WSRF_TRUSTSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + GME_SERVICE_DIR + "/" + TRUSTSTORE_FILE_NAME;
-	private static final String LEGACY_WSRF_TRUSTSTORE_PASSWORD_PROPERTY = "cagrid.gme.legacy-wsrf.truststore.password";
-	private static final String LEGACY_WSRF_URL_PROPERTY = "cagrid.gme.legacy-wsrf.url";
+	private static final String LEGACY_WSRF_KEY_PASSWORD_PROPERTY = "${package}.legacy-wsrf.key.password";
+	private static final String LEGACY_WSRF_KEYSTORE_FILE_NAME = "legacy-host.jks";
+	private static final String LEGACY_WSRF_KEYSTORE_PATH_PROPERTY = "${package}.legacy-wsrf.keystore.path";
+	private static final String LEGACY_WSRF_KEYSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + SERVICE_DIR + "/" + LEGACY_WSRF_KEYSTORE_FILE_NAME;
+	private static final String LEGACY_WSRF_TRUSTSTORE_PATH_PROPERTY = "${package}.legacy-wsrf.truststore.path";
+	private static final String LEGACY_WSRF_TRUSTSTORE_PATH = "${symbol_dollar}{karaf.base}/etc/" + SERVICE_DIR + "/" + TRUSTSTORE_FILE_NAME;
+	private static final String LEGACY_WSRF_TRUSTSTORE_PASSWORD_PROPERTY = "${package}.legacy-wsrf.truststore.password";
+	private static final String LEGACY_WSRF_URL_PROPERTY = "${package}.legacy-wsrf.url";
 	private static final String LEGACY_WSRF_PORT_PROMPT = "Enter a port number for the legacy WSRF service";
-	private static final String LEGACY_WSRF_PORT_PROPERTY = "cagrid.gme.legacy-wsrf.port";
-	private static final String DB_URL_PROMPT = "Please enter the database URL";
-	private static final String DB_URL_PROPERTY = "cagrid.gme.service.db.url";
-	private static final String DB_USER_PROMPT = "Please enter the database username";
-	private static final String DB_USER_PROPERTY = "cagrid.gme.service.db.username";
-	private static final String DB_PASSWORD_PROMPT = "Please enter the database password";
-	private static final String DB_PASSWORD_PROPERTY = "cagrid.gme.service.db.password";;
+	private static final String LEGACY_WSRF_PORT_PROPERTY = "${package}.legacy-wsrf.port";
+
 
 	private String adminIdentity;
 	private String truststorePassword;
 	private Boolean configureLegacyWSRF;
-	private File gmeEtcDir;
+	private File etcDir;
 	private String keystorePassword;
 	private String hostname;
 	private String legacyHostname;
@@ -149,26 +144,23 @@ public class Bootstrapper extends BaseCommandLine {
 	@Override
 	public void execute() throws Exception {
 		System.out.println("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*");
-		System.out.println("*            Global Model Exchange Bootstrapper             *");
+		System.out.println("*            ${rootArtifactId} Bootstrapper             *");
 		System.out.println("*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*~*");
 		System.out.println("");
-		gmeEtcDir = new File(getServiceMixEtc().getAbsolutePath() + File.separator + GME_SERVICE_DIR);
-		gmeEtcDir.mkdirs();
+		etcDir = new File(getServiceMixEtc().getAbsolutePath() + File.separator + SERVICE_DIR);
+		etcDir.mkdirs();
 		configureTruststore();
 		createWSRFKeystore();
 		configureLegacyWSRFCredentials();
-		configureGlobalModelExchange();
+		configureService();
 		configureWSRFService();
 
 	}
 
-	private void configureGlobalModelExchange() throws Exception {
+	private void configureService() throws Exception {
 		Properties props = new Properties();
-		props.setProperty(DB_URL_PROPERTY, getValue(DB_URL_PROMPT, DB_URL_PROPERTY));
-		props.setProperty(DB_USER_PROPERTY, getValue(DB_USER_PROMPT, DB_USER_PROPERTY));
-		props.setProperty(DB_PASSWORD_PROPERTY, getValue(DB_PASSWORD_PROMPT, DB_PASSWORD_PROPERTY));
-		File config = new File(getServiceMixEtc(), GME_SERVICE_CFG);
-		props.store(new FileOutputStream(config), "Global Model Exchange Service Configuration saved by bootstrapper on " + new Date());
+		File config = new File(getServiceMixEtc(), SERVICE_CFG);
+		props.store(new FileOutputStream(config), "${rootArtifactId} Configuration saved by bootstrapper on " + new Date());
 	}
 
 	private void configureWSRFService() throws Exception {
@@ -201,8 +193,8 @@ public class Bootstrapper extends BaseCommandLine {
 			props.setProperty(LEGACY_WSRF_KEY_PASSWORD_PROPERTY, getLegacyKeyPassword());
 		}
 
-		File wsrfConfig = new File(getServiceMixEtc(), GME_WSRF_CFG);
-		props.store(new FileOutputStream(wsrfConfig), "Global Model Exchange WSRF Service Configuration saved by bootstrapper on " + new Date());
+		File wsrfConfig = new File(getServiceMixEtc(), WSRF_CFG);
+		props.store(new FileOutputStream(wsrfConfig), "${rootArtifactId} WSRF Service Configuration saved by bootstrapper on " + new Date());
 	}
 
 	public void configureLegacyWSRFCredentials() throws Exception {
@@ -219,7 +211,7 @@ public class Bootstrapper extends BaseCommandLine {
 			String keyPassword = getLegacyKeyPassword();
 			String password = getLegacyKeystorePassword();
 			hks.setKeyEntry(alias, pkey, keyPassword.toCharArray(), hostCertChain);
-			File hostPath = new File(this.gmeEtcDir.getAbsolutePath() + File.separator + LEGACY_WSRF_KEYSTORE_FILE_NAME);
+			File hostPath = new File(this.etcDir.getAbsolutePath() + File.separator + LEGACY_WSRF_KEYSTORE_FILE_NAME);
 			FileOutputStream out = new FileOutputStream(hostPath);
 			hks.store(out, password.toCharArray());
 			out.close();
@@ -238,7 +230,7 @@ public class Bootstrapper extends BaseCommandLine {
 		String certSource = getValueWithOptions("Obtain certificates from (f) filesystem, (r) remote dorian, (l) local database", WSRF_CERTIFICATE_SOURCE, new String[] {"f", "r", "l"});
 		X509Certificate cert = null;
 		PrivateKey pkey = null;
-		String hostPath = this.gmeEtcDir.getAbsolutePath() + File.separator + WSRF_KEYSTORE_FILE_NAME;
+		String hostPath = this.etcDir.getAbsolutePath() + File.separator + WSRF_KEYSTORE_FILE_NAME;
 		if ("f".equals(certSource)) {
 			String hostCertificate = getValue(WSRF_CERTIFICATE_PROMPT, WSRF_CERTIFICATE_PROPERTY);
 			cert = CertUtil.loadCertificate(new File(hostCertificate));
@@ -252,7 +244,7 @@ public class Bootstrapper extends BaseCommandLine {
 			String keyPassword = getKeyPassword();
 			String password = getKeystorePassword();
 			hks.setKeyEntry(alias, pkey, keyPassword.toCharArray(), hostCertChain);
-			File hostFile = new File(this.gmeEtcDir.getAbsolutePath() + File.separator + WSRF_KEYSTORE_FILE_NAME);
+			File hostFile = new File(this.etcDir.getAbsolutePath() + File.separator + WSRF_KEYSTORE_FILE_NAME);
 			FileOutputStream out = new FileOutputStream(hostPath);
 			hks.store(out, password.toCharArray());
 			out.close();
@@ -426,9 +418,9 @@ public class Bootstrapper extends BaseCommandLine {
 	}
 
 	private void configureTruststore() throws Exception {
-		File f = new File(this.gmeEtcDir.getAbsolutePath() + File.separator + TRUSTSTORE_FILE_NAME);
+		File f = new File(this.etcDir.getAbsolutePath() + File.separator + TRUSTSTORE_FILE_NAME);
 		this.copyTrustStore(f.getAbsolutePath(), getTruststorePassword());
-		System.out.println("Truststore created for Global Model Excchange at " + f.getAbsolutePath());
+		System.out.println("Truststore created for ${rootArtifactId} at " + f.getAbsolutePath());
 	}
 
 	public String getTruststorePassword() {
