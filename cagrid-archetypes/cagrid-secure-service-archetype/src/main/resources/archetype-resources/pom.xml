@@ -53,6 +53,11 @@
             </dependency>
             <dependency>
                 <groupId>org.cagrid</groupId>
+                <artifactId>cagrid-trust-api</artifactId>
+                <version>${cagrid.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cagrid</groupId>
                 <artifactId>cagrid-service-registration-api</artifactId>
                 <version>${cagrid.version}</version>
             </dependency>

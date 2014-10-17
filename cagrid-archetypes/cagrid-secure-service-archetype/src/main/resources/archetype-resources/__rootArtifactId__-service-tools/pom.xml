@@ -8,7 +8,7 @@
 	</parent>
 
 	<artifactId>${artifactId}</artifactId>
-	<name>caGrid ${rootArtifactId} Service Tools</name>
+	<name>${serviceName} Service Tools</name>
 
 	<dependencies>
 		<dependency>

@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>${artifactId}</artifactId>
 	<packaging>bundle</packaging>
-	<name>caGrid ${rootArtifactId} WSRF SOAP Endpoint</name>
+	<name>${serviceName} WSRF SOAP Endpoint</name>
 
 	<build>
 		<plugins>

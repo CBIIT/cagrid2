@@ -1,0 +1,27 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0"?>
+<features name="${rootArtifactId}-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+    <repository>mvn:org.cagrid.wsrf/wsrf-draft-features/${symbol_dollar}{org.cagrid.wsrf/wsrf-draft-features/version}/xml/features</repository>
+    <repository>mvn:org.cagrid/cagrid-features/${symbol_dollar}{org.cagrid/cagrid-features/version}/xml/features</repository>
+
+    <feature name="${rootArtifactId}" version="${project.version}">
+        <configfile finalname="/etc/${rootArtifactId}/serviceMetadata.xml">mvn:${project.groupId}/${rootArtifactId}-wsrf/${project.version}/xml/serviceMetadata</configfile>
+        <configfile finalname="/etc/${rootArtifactId}/serviceSecurityMetadata.xml">mvn:${project.groupId}/${rootArtifactId}-wsrf/${project.version}/xml/serviceSecurityMetadata</configfile>
+        <configfile finalname="/etc/${rootArtifactId}/registration.xml">mvn:${project.groupId}/${rootArtifactId}-wsrf/${project.version}/xml/registration</configfile>
+        <feature version="${cagrid.version}">cagrid-service-registration</feature>
+        <feature version="$cagrid.version}">cagrid-gaards</feature>
+        <bundle>mvn:org.cagrid/cagrid-trust-api/${symbol_dollar}{org.cagrid/cagrid-trust-api/version}</bundle>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-api/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-service/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-wsrf/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-soap-client/${project.version}</bundle>
+    </feature>
+    <feature name="${rootArtifactId}-client" version="${project.version}">
+        <feature version="${cagrid.version}">cagrid-gaards</feature>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-api/${project.version}</bundle>
+        <bundle>mvn:${project.groupId}/${rootArtifactId}-soap-client/${project.version}</bundle>
+    </feature>
+
+</features>
