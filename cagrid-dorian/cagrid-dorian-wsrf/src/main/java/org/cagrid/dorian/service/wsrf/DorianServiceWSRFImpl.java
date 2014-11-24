@@ -1205,9 +1205,10 @@ public class DorianServiceWSRFImpl extends DorianPortTypeImpl {
         logger.info(message);
 
         String gridId = getCallerId();
-        GetAccountProfileResponse response = null;
+        GetAccountProfileResponse response = new GetAccountProfileResponse();
         try {
-            dorian.getAccountProfile(gridId);
+           AccountProfile p =  dorian.getAccountProfile(gridId);
+           response.setAccountProfile(p);
         } catch (RemoteException re) {
             throw new DorianInternalFaultFaultMessage(message + ": " + re.getMessage());
         } catch (DorianInternalException die) {
@@ -1231,6 +1232,7 @@ public class DorianServiceWSRFImpl extends DorianPortTypeImpl {
         try {
             dorian.updateAccountProfile(gridId, profile);
             response = new UpdateAccountProfileResponse();
+
         } catch (RemoteException re) {
             throw new DorianInternalFaultFaultMessage(message + ": " + re.getMessage());
         } catch (DorianInternalException die) {
