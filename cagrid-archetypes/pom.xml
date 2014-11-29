@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.cagrid</groupId>
         <artifactId>cagrid-osgi</artifactId>
-        <version>2.1.4</version>
+        <version>2.1.5-SNAPSHOT</version>
     </parent>
     <artifactId>cagrid-archetypes</artifactId>
     <packaging>pom</packaging>
@@ -17,6 +17,6 @@
         <connection>scm:git:git://github.com/CBIIT/cagrid2.git/cagrid-archetypes</connection>
         <developerConnection>scm:git:ssh://git@github.com/CBIIT/cagrid2.git/cagrid-archetypes</developerConnection>
         <url>https://github.com/CBIIT/cagrid2/cagrid-archetypes</url>
-      <tag>cagrid-osgi-2.1.4</tag>
+      <tag>HEAD</tag>
   </scm>
 </project>
